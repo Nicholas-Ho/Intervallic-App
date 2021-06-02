@@ -1,8 +1,8 @@
 // Objects for data
 
 class ReminderGroup {
-  final int id;
-  final String name;
+  int id;
+  String name;
 
   ReminderGroup({this.id, this.name}); // Constructor
 
@@ -12,15 +12,22 @@ class ReminderGroup {
       'name': name,
     };
   }
+
+  static ReminderGroup fromMap(Map<String, dynamic> map) {
+    return ReminderGroup(
+        id: map['id'],
+        name: map['name'],
+      );
+  }
 }
 
 class Reminder {
-  final int id;
-  final String name;
-  final int reminderGroupID;
-  final int interval; // Duration.inSeconds
-  final int lastDone; // DateTime.millisecondsSinceEpoch
-  final String description;
+  int id;
+  String name;
+  int reminderGroupID;
+  int interval; // Duration.inSeconds
+  int lastDone; // DateTime.millisecondsSinceEpoch
+  String description;
 
   Reminder({this.id, this.name, this.reminderGroupID, this.interval, this.lastDone, this.description});
 
@@ -28,10 +35,21 @@ class Reminder {
     return {
       'id': id,
       'name': name,
-      'reminderGroupID': reminderGroupID,
+      'reminder_group_id': reminderGroupID,
       'interval': interval,
-      'lastDone': lastDone,
+      'last_done': lastDone,
       'description': description,
     };
+  }
+
+  static Reminder fromMap(Map<String, dynamic> map) {
+    return Reminder(
+        id: map['id'],
+        name: map['name'],
+        reminderGroupID: map['reminder_group_id'],
+        interval: map['interval'],
+        lastDone: map['last_done'],
+        description: map['description'],
+      );
   }
 }

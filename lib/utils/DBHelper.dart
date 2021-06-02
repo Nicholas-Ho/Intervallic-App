@@ -1,9 +1,10 @@
 import 'dart:async';
 
-import 'package:sqflite/sqflite.dart';
-import 'package:path/path.dart';
 
 import 'package:intervallic_app/models/models.dart';
+
+import 'package:sqflite/sqflite.dart';
+import 'package:path/path.dart';
 
 // Database Helper class for SQLite databse
 class DBHelper {
@@ -55,41 +56,17 @@ class DBHelper {
     );
   }
 
-  // Adding new Reminder Group to database
-  newReminderGroup(ReminderGroup newGroup) async {
+  // Insert new entry into database
+  newEntryToDB(String databaseName, Map<String, dynamic> entry) async {
     final db = await database;
 
-    var res = await db.rawInsert('''
-      INSERT INTO reminder_groups(
-        id, name
-      ) VALUES (?, ?)
-    ''', [newGroup.id, newGroup.name]);
+    var id = await db.insert(databaseName, entry);
 
-    return res;
-  }
-
-  // Adding new Reminder to database
-  newReminder(Reminder newReminder) async {
-    final db = await database;
-
-    var res = await db.rawInsert('''
-      INSERT INTO reminders(
-        id, name, reminder_group_id, interval, last_done, description
-      ) VALUES (?, ?, ?, ?, ?, ?)
-    ''', [
-      newReminder.id,
-      newReminder.name,
-      newReminder.reminderGroupID,
-      newReminder.interval,
-      newReminder.lastDone,
-      newReminder.description
-    ]);
-
-    return res;
+    return id;
   }
 
   // General Function to query database
-  Future<List<Map<String, dynamic>>> _queryDatabase(String table, [String whereColumn, String whereArg]) async {
+  Future<List<Map<String, dynamic>>> queryDatabase(String table, {List<String> columns, String whereColumn, String whereArg}) async {
     final db = await database;
 
     if (whereColumn != null && whereArg != null) {
@@ -97,68 +74,84 @@ class DBHelper {
       List<Object> whereArgsList = [whereArg];
       return await db.query(
         table,
+        columns: columns,
         where: whereString,
         whereArgs: whereArgsList,
       );
     } else {
-      return await db.query(table);
+      return await db.query(
+        table,
+        columns: columns);
     }
   }
 
-  // Query all Reminder Groups from database. Returns List of Reminder Groups
-  Future<List<ReminderGroup>> getAllReminderGroups() async {
-    final List<Map<String, dynamic>> maps =
-        await _queryDatabase('reminder_groups');
-
-    return List.generate(maps.length, (i) {
-      return ReminderGroup(
-        id: maps[i]['id'],
-        name: maps[i]['name'],
-      );
-    });
-  }
-
-  // Query Reminders by Reminder Group ID
-  Future<List<Reminder>> getRemindersByGroup(int group) async {
-    final List<Map<String, dynamic>> maps =
-        await _queryDatabase('reminders', 'reminder_group_id', '$group');
-
-    return List.generate(maps.length, (i) {
-      return Reminder(
-        id: maps[i]['id'],
-        name: maps[i]['name'],
-        reminderGroupID: maps[i]['reminder_group_id'],
-        interval: maps[i]['interval'],
-        lastDone: maps[i]['last_done'],
-        description: maps[i]['description'],
-      );
-    });
-  }
-
-  /*Future<dynamic> getReminderGroup() async {
+  // Update a database entry (by id)
+  updateEntryToDB(String databaseName, Map<String, dynamic> entry) async {
     final db = await database;
 
-    var res = await db.query('user');
-    if(res.length == 0) {
-      return null;
-    } else {
-      var resMap = res[0];
-      return resMap.isNotEmpty ? resMap : null;
+    var id = await db.update(databaseName,
+      entry,
+      where: 'id = ?',
+      whereArgs: entry['id']);
+
+    return id;
+  }
+
+  // Delete a database entry (by id)
+  deleteFromDB(String databaseName, Map<String, dynamic> entry) async {
+    final db = await database;
+
+    var id = await db.delete(databaseName,
+      where: 'id = ?',
+      whereArgs: entry['id']);
+
+    return id;
+  }
+
+  // Helper function for resetting the existing database and setting up the test database
+  Future<void> setupDebugDatabase() async {
+    Future<void> addData() async {
+      ReminderGroup dailyReminders = ReminderGroup(id: 1, name: "Daily Reminders");
+      ReminderGroup keepInTouch = ReminderGroup(id: 2, name: "Keep In Touch");
+      ReminderGroup miscellaneous = ReminderGroup(id: 3, name: "Miscellaneous");
+
+      await newEntryToDB('reminder_groups', dailyReminders.toMap());
+      await newEntryToDB('reminder_groups', keepInTouch.toMap());
+      await newEntryToDB('reminder_groups', miscellaneous.toMap());
+
+      Reminder doYoga = Reminder(
+          id: 1,
+          name: "Do Yoga",
+          reminderGroupID: 1,
+          interval: 100,
+          lastDone: 100,
+          description: null);
+      
+      Reminder waterPlants = Reminder(
+          id: 2,
+          name: "Water the Plants",
+          reminderGroupID: 1,
+          interval: 100,
+          lastDone: 100,
+          description: null);
+
+      Reminder nelson = Reminder(
+          id: 3,
+          name: "Call Nelson",
+          reminderGroupID: 2,
+          interval: 100,
+          lastDone: 100,
+          description: null);
+
+      await newEntryToDB('reminders', doYoga.toMap());
+      await newEntryToDB('reminders', waterPlants.toMap());
+      await newEntryToDB('reminders', nelson.toMap());
     }
-  }*/
 
-  /*Future<List<Reminder>> getAllReminders() async {
-    final List<Map<String, dynamic>> maps = await _queryDatabase('reminders');
+    var databasesPath = await getDatabasesPath();
+    String path = join(databasesPath, 'reminders_database.db');
+    await deleteDatabase(path);
 
-    return List.generate(maps.length, (i) {
-      return Reminder(
-        id: maps[i]['id'],
-        name: maps[i]['name'],
-        reminderGroupID: maps[i]['reminder_group_id'],
-        interval: maps[i]['interval'],
-        lastDone: maps[i]['last_done'],
-        description: maps[i]['description'],
-      );
-    });
-  }*/
+    await addData();
+  }
 }
