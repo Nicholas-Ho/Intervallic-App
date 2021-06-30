@@ -1,15 +1,16 @@
 import 'dart:async';
 
-
-import 'package:intervallic_app/models/models.dart';
-
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
 
 // Database Helper class for SQLite databse
 class DBHelper {
-  DBHelper._();
-  static final DBHelper db = DBHelper._(); // Database is a singleton
+  DBHelper._(); // Private constructor
+  static final DBHelper _dbHelperSingleton = DBHelper._(); // Database is a singleton
+
+  factory DBHelper() { // Refactored for testing purposes (ReminderDataState test)
+    return _dbHelperSingleton;
+  }
 
   static Database _database;
 
@@ -19,12 +20,12 @@ class DBHelper {
       return _database;
     }
 
-    _database = await initDB();
+    _database = await _initDB();
     return _database;
   }
 
   // Opening the database connection. Hard-coded onCreate. Foreign Keys enabled.
-  initDB() async {
+  _initDB() async {
     return await openDatabase(
       join(await getDatabasesPath(), 'reminders_database.db'),
       onCreate: (db, version) async {
@@ -66,22 +67,22 @@ class DBHelper {
   }
 
   // General Function to query database
-  Future<List<Map<String, dynamic>>> queryDatabase(String table, {List<String> columns, String whereColumn, String whereArg}) async {
+  Future<List<Map<String, dynamic>>> queryDatabase(String databaseName, {List<String> columns, String whereColumn, String whereArg}) async {
     final db = await database;
 
     if (whereColumn != null && whereArg != null) {
       String whereString = "$whereColumn = ?";
       List<Object> whereArgsList = [whereArg];
       return await db.query(
-        table,
+        databaseName,
         columns: columns,
         where: whereString,
         whereArgs: whereArgsList,
       );
     } else {
       return await db.query(
-        table,
-        columns: columns);
+        databaseName,
+        columns: columns); // Passing null into columns will return all columns.
     }
   }
 
@@ -106,52 +107,5 @@ class DBHelper {
       whereArgs: entry['id']);
 
     return id;
-  }
-
-  // Helper function for resetting the existing database and setting up the test database
-  Future<void> setupDebugDatabase() async {
-    Future<void> addData() async {
-      ReminderGroup dailyReminders = ReminderGroup(id: 1, name: "Daily Reminders");
-      ReminderGroup keepInTouch = ReminderGroup(id: 2, name: "Keep In Touch");
-      ReminderGroup miscellaneous = ReminderGroup(id: 3, name: "Miscellaneous");
-
-      await newEntryToDB('reminder_groups', dailyReminders.toMap());
-      await newEntryToDB('reminder_groups', keepInTouch.toMap());
-      await newEntryToDB('reminder_groups', miscellaneous.toMap());
-
-      Reminder doYoga = Reminder(
-          id: 1,
-          name: "Do Yoga",
-          reminderGroupID: 1,
-          interval: 100,
-          lastDone: 100,
-          description: null);
-      
-      Reminder waterPlants = Reminder(
-          id: 2,
-          name: "Water the Plants",
-          reminderGroupID: 1,
-          interval: 100,
-          lastDone: 100,
-          description: null);
-
-      Reminder nelson = Reminder(
-          id: 3,
-          name: "Call Nelson",
-          reminderGroupID: 2,
-          interval: 100,
-          lastDone: 100,
-          description: null);
-
-      await newEntryToDB('reminders', doYoga.toMap());
-      await newEntryToDB('reminders', waterPlants.toMap());
-      await newEntryToDB('reminders', nelson.toMap());
-    }
-
-    var databasesPath = await getDatabasesPath();
-    String path = join(databasesPath, 'reminders_database.db');
-    await deleteDatabase(path);
-
-    await addData();
   }
 }

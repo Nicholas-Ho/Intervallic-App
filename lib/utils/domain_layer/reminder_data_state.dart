@@ -1,12 +1,15 @@
 import 'package:flutter/foundation.dart';
 
 import 'package:intervallic_app/models/models.dart';
-import 'DBHelper.dart';
+import '../data_layer/db_helper.dart';
+import 'id_manager.dart';
 
 // State of all reminders and reminder groups. Part of the domain layer using Provider.
 class ReminderDataState extends ChangeNotifier {
   Map<ReminderGroup, List<Reminder>> _reminderData;
   IdManager _idManager;
+
+  DBHelper dataLayer = DBHelper();
 
   // Lazy getter for reminderData
   Future<Map<ReminderGroup, List<Reminder>>> get reminderData async {
@@ -31,7 +34,7 @@ class ReminderDataState extends ChangeNotifier {
       reminderData[currentReminderGroup] = remindersInGroup;
     }
 
-    _idManager = _initIDManager(); // Initialise ID Manager here
+    _idManager = await _initIDManager(); // Initialise ID Manager here
 
     return reminderData;
   }
@@ -39,7 +42,7 @@ class ReminderDataState extends ChangeNotifier {
   // Query all Reminder Groups
   Future<List<ReminderGroup>> _getAllReminderGroups() async {
     final List<Map<String, dynamic>> maps =
-        await DBHelper.db.queryDatabase('reminder_groups');
+        await dataLayer.queryDatabase('reminder_groups');
 
     return List.generate(maps.length, (i) {
       return ReminderGroup.fromMap(maps[i]);
@@ -48,7 +51,7 @@ class ReminderDataState extends ChangeNotifier {
 
   // Query Reminders by Reminder Group ID
   Future<List<Reminder>> _getRemindersByGroup(int group) async {
-    final List<Map<String, dynamic>> maps = await DBHelper.db
+    final List<Map<String, dynamic>> maps = await dataLayer
         .queryDatabase('reminders', whereColumn: 'reminder_group_id', whereArg: '$group');
 
     return List.generate(maps.length, (i) {
@@ -59,9 +62,9 @@ class ReminderDataState extends ChangeNotifier {
   _initIDManager() async {
     // Query all Primary Keys
     Future<Map<String, List<int>>> _getAllPrimaryKeys(List<String> tables) async {
-      Map<String, List<int>> keys;
+      Map<String, List<int>> keys = {};
       for (int i = 0; i < tables.length; i++) {
-        List<Map<String, dynamic>> pkMap = await DBHelper.db.queryDatabase(tables[i], columns: ['id']);
+        List<Map<String, dynamic>> pkMap = await dataLayer.queryDatabase(tables[i], columns: ['id']);
         keys[tables[i]] = List.generate(pkMap.length, (i) {
           return pkMap[i]['id'];
         });
@@ -75,16 +78,17 @@ class ReminderDataState extends ChangeNotifier {
 
   // Adding new Reminder
   newReminder(Reminder newReminder) async {
-    newReminder.id = _idManager.nextAvailableID('reminder');
-
     try {
       final data = await reminderData;
       final reminderGroup = data.keys.firstWhere((group) => group.id == newReminder.reminderGroupID);
 
+      // Only call nextAvailableID if no error is thrown
+      // Reminder().setID() is not in-place because Equatable is immutable
+      newReminder = newReminder.setID(_idManager.nextAvailableID('reminders'));
       _reminderData[reminderGroup].add(newReminder);
 
       // Add to database
-     DBHelper.db.newEntryToDB('reminders', newReminder.toMap());
+     dataLayer.newEntryToDB('reminders', newReminder.toMap());
 
      notifyListeners();
     } on StateError {
@@ -94,17 +98,23 @@ class ReminderDataState extends ChangeNotifier {
 
   // Adding new Reminder Group
   newReminderGroup(ReminderGroup newGroup) async {
-    newGroup.id = _idManager.nextAvailableID('reminder_groups');
     final data = await reminderData;
-    if ((data.keys.firstWhere((group) => group.id == newGroup.id)) == null) {
+    final isTaken = data.keys.firstWhere((group) => group.name == newGroup.name, orElse: () {
+      // Only call nextAvailableID if no error is thrown
+      // ReminderGroup().setID() is not in-place because Equatable is immutable
+      newGroup = newGroup.setID(_idManager.nextAvailableID('reminder_groups'));
       _reminderData[newGroup] = [];
 
       // Add to database
-      DBHelper.db.newEntryToDB('reminder_groups', newGroup.toMap());
+      dataLayer.newEntryToDB('reminder_groups', newGroup.toMap());
 
       notifyListeners();
-    } else {
-      print('Reminder group ID already used. New reminder group not added.');
+
+      return null;
+    });
+
+    if (isTaken != null) {
+      print('Identical Reminder Group exists!');
     }
   }
 
@@ -119,7 +129,7 @@ class ReminderDataState extends ChangeNotifier {
         _reminderData[reminderGroup][reminderIndex] = updatedReminder;
 
         // Update database
-        DBHelper.db.updateEntryToDB('reminders', updatedReminder.toMap());
+        dataLayer.updateEntryToDB('reminders', updatedReminder.toMap());
 
         notifyListeners();
       } else {
@@ -137,7 +147,7 @@ class ReminderDataState extends ChangeNotifier {
     Map<ReminderGroup, List<Reminder>> newData = {};
 
     data.forEach((key, value) {
-      if(key == updatedReminderGroup) {
+      if(key.id == updatedReminderGroup.id) {
         newData[updatedReminderGroup] = value;
         existsFlag = true;
       } else {
@@ -149,7 +159,7 @@ class ReminderDataState extends ChangeNotifier {
       _reminderData = newData;
 
       // Update database
-      DBHelper.db.updateEntryToDB('reminder_groups', updatedReminderGroup.toMap());
+      dataLayer.updateEntryToDB('reminder_groups', updatedReminderGroup.toMap());
 
       notifyListeners();
     } else {
@@ -166,8 +176,10 @@ class ReminderDataState extends ChangeNotifier {
       final isInGroup = _reminderData[reminderGroup].remove(deletedReminder);
 
       if(isInGroup) {
+        _idManager.removeID('reminders', deletedReminder.id); // Only remove ID if Reminder was removed
+
         // Delete from database
-        DBHelper.db.deleteFromDB('reminders', deletedReminder.toMap());
+        dataLayer.deleteFromDB('reminders', deletedReminder.toMap());
 
         notifyListeners();
       } else {
@@ -179,63 +191,19 @@ class ReminderDataState extends ChangeNotifier {
   }
 
   // Deleting an existing Reminder Group
-  deleteReminderGroup(Reminder deletedReminderGroup) async {
+  deleteReminderGroup(ReminderGroup deletedReminderGroup) async {
+    _reminderData ?? await reminderData; // Ensures that _getDBData has been called
     final isInGroup = _reminderData.remove(deletedReminderGroup);
 
     if(isInGroup != null) {
+      _idManager.removeID('reminder_groups', deletedReminderGroup.id);
+
       // Delete from database
-      DBHelper.db.deleteFromDB('reminder_groups', deletedReminderGroup.toMap());
+      dataLayer.deleteFromDB('reminder_groups', deletedReminderGroup.toMap());
 
       notifyListeners();
     } else {
       print('Reminder Group does not exist. Reminder Group not deleted.');
     }
-  }
-}
-
-class IdManager {
-  Map<String, List<int>> _idMaps;
-  Map<String, int> _nextAvailableIDs;
-
-  IdManager(Map<String, List<int>> idMaps) { // Pass in the raw values of the SQL query of Primary Keys in a table
-    idMaps.forEach((key, value) {
-      value.sort(); // sort just in case
-      _idMaps[key] = value;
-
-      // For the following sorted id list: [1, 2, 3, 6], since when the index = 3, value = 6, which is not index + 1, the next available id is 4
-      // For the following sorted id list: [1, 2, 3, 4], since for all values, value = index + 1, the next available id is 5, or length + 1
-      int nextAvailableID = value.length + 1;
-      for (int i = 0; i < value.length; i++) {
-        if(value[i] != i + 1) {
-          nextAvailableID = i + 1;
-          break;
-        }
-      }
-      _nextAvailableIDs[key] = nextAvailableID;
-    });
-  }
-
-  int nextAvailableID(String table) {
-    int nextAvailableID = _nextAvailableIDs[table]; // current nextAvailableID
-    _idMaps[table].insert(nextAvailableID - 1, nextAvailableID);
-
-    int newAvailableID = _idMaps[table].length + 1;
-    for (int i = nextAvailableID; i < _idMaps[table].length; i++) { // We only need to check from the current nextAvailableID
-      if(_idMaps[table][i] != i + 1) {
-        newAvailableID = i + 1;
-        break;
-      }
-    }
-    _nextAvailableIDs[table] = newAvailableID;
-
-    return nextAvailableID;
-  }
-
-  void removeID(String table, int id) {
-    if (_nextAvailableIDs[table] > id) {
-      _nextAvailableIDs[table] = id;
-    }
-
-    _idMaps[table].remove(id);
   }
 }

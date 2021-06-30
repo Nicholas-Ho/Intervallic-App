@@ -1,22 +1,21 @@
 import 'package:flutter/widgets.dart';
 import 'package:flutter/material.dart';
 
-import 'package:intervallic_app/utils/domain.dart';
-import 'package:intervallic_app/models/models.dart';
-
 import 'package:provider/provider.dart';
+
+import 'package:intervallic_app/utils/domain_layer/reminder_data_state.dart';
+import 'package:intervallic_app/models/models.dart';
 
 // The to-do list
 class ReminderList extends StatelessWidget {
   @override
   Widget build(context) {
-    return Consumer<ReminderDataState>(// Consumer for Reminder Data
+    return Consumer<ReminderDataState>( // Consumer for Reminder Data
         builder: (context, reminderDataState, child) {
           return FutureBuilder(
               // Future Builder for queried Reminder Data
               future: reminderDataState.reminderData,
-              builder: (context,
-                  AsyncSnapshot<Map<ReminderGroup, List<Reminder>>> snapshot) {
+              builder: (context, AsyncSnapshot<Map<ReminderGroup, List<Reminder>>> snapshot) {
                 if (snapshot.hasData) {
                   return ListView(
                     children: generateContainers(snapshot.data),
@@ -75,23 +74,22 @@ class ReminderGroupTile extends StatelessWidget {
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 5),
-      child: Container(
+      child: SizedBox(
         height: 60,
         width: 370,
-        padding: const EdgeInsets.all(10),
-        decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(10),
-            boxShadow: [
-              BoxShadow(
-                  offset: Offset(0, 10),
-                  blurRadius: 30,
-                  spreadRadius: -15,
-                  color: Colors.black.withOpacity(0.3))
-            ]),
-        child: Text(reminderGroup.name),
-        alignment: Alignment.centerLeft,
-      )
+        child: Card(
+          color: Colors.white,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(10.0),
+          ),
+          child: Padding(
+            padding: const EdgeInsets.all(10),
+            child: Align(
+              alignment: Alignment.centerLeft,
+              child: Text(reminderGroup.name),
+              ),
+            ),),
+      ),
     );
   }
 }
@@ -119,24 +117,23 @@ class ReminderTile extends StatelessWidget {
   ReminderTile({this.reminder});
   @override
   Widget build(BuildContext context) {
-    return  Padding(
+    return Padding(
       padding: const EdgeInsets.symmetric(vertical: 5),
-      child: Container(
+      child: SizedBox(
         height: 60,
         width: 350,
-        padding: const EdgeInsets.all(10),
-        decoration: BoxDecoration(
-            color: Colors.greenAccent,
-            borderRadius: BorderRadius.circular(10),
-            boxShadow: [
-              BoxShadow(
-                  offset: Offset(0, 10),
-                  blurRadius: 30,
-                  spreadRadius: -15,
-                  color: Colors.black.withOpacity(0.5))
-            ]),
-        child: Text(reminder.name),
-        alignment: Alignment.centerLeft,
+        child: Card(
+          color: Colors.greenAccent,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(10.0),
+          ),
+          child: Padding(
+            padding: const EdgeInsets.all(10),
+            child: Align(
+              alignment: Alignment.centerLeft,
+              child: Text(reminder.name),
+              ),
+            ),),
       ),
     );
   }
