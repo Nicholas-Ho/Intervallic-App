@@ -26,13 +26,9 @@ class _NewReminderFormDialogState extends State<NewReminderFormDialog> {
   TextEditingController _intervalTextController = TextEditingController();
 
   // Interval Dropdown
-  final intervalDropdownDict = { // Convert all values to milliseconds
-    'Days': 86400000,
-    'Weeks': 604800000,
-    'Months': 18748800000, // 31 Days. Should change.
-    'Years': 31536000000
-  };
-  var intervalDropdownValue = 604800000; // Default value of 'Weeks'
+  final intervalDropdownList = ['Days', 'Weeks', 'Months', 'Years'];
+
+  var intervalDropdownValue = 'Weeks'; // Default value of 'Weeks'
 
   
   // Start Date Date Picker
@@ -73,7 +69,7 @@ class _NewReminderFormDialogState extends State<NewReminderFormDialog> {
     return Padding(
       padding: EdgeInsets.all(5.0),
       child: TextFormField(
-        key: Key('Name Text Field'), // For testing
+        key: Key('Reminder Name Text Field'), // For testing
         controller: controller,
         decoration: InputDecoration(
           border: OutlineInputBorder(),
@@ -183,11 +179,11 @@ class _NewReminderFormDialogState extends State<NewReminderFormDialog> {
                 iconSize: 24,
                 elevation: 16,
                 style: TextStyle(color: Theme.of(context).buttonColor),
-              items: intervalDropdownDict.entries.map<DropdownMenuItem<int>>((entry) {
+              items: intervalDropdownList.map<DropdownMenuItem<String>>((element) {
                 return DropdownMenuItem(
-                  key: Key(entry.key), // For testing
-                  value: entry.value,
-                  child: Text(entry.key, style: TextStyle(color: Colors.black),)
+                  key: Key(element), // For testing
+                  value: element,
+                  child: Text(element, style: TextStyle(color: Colors.black),)
                 );
               }).toList(),
               onChanged: (value) {
@@ -247,9 +243,9 @@ class _NewReminderFormDialogState extends State<NewReminderFormDialog> {
     );
   }
 
-  Widget createReminderButton(TextEditingController reminderNameController, int reminderGroupID, TextEditingController intervalTextController, int intervalType, DateTime startDate) {
+  Widget createReminderButton(TextEditingController reminderNameController, int reminderGroupID, TextEditingController intervalTextController, String intervalType, DateTime startDate) {
     return Padding(
-      padding: EdgeInsets.all(5.0),
+      padding: EdgeInsets.all(0.0),
       child: TextButton(
         child: Text('Add'),
         onPressed: () {
@@ -259,8 +255,9 @@ class _NewReminderFormDialogState extends State<NewReminderFormDialog> {
                 id: 0,
                 name: reminderNameController.text,
                 reminderGroupID: reminderGroupID,
-                interval: int.parse(intervalTextController.text) * intervalType,
-                lastDone: startDate.millisecondsSinceEpoch,
+                intervalValue: int.parse(intervalTextController.text),
+                intervalType: intervalType,
+                nextDate: startDate,
               )
             );
             ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Reminder Added!')));

@@ -123,10 +123,13 @@ class ReminderDataState extends ChangeNotifier {
     try {
       final data = await reminderData;
       final reminderGroup = data.keys.firstWhere((group) => group.id == updatedReminder.reminderGroupID);
+      print(data[reminderGroup]);
       final reminderIndex = data[reminderGroup].indexWhere((reminder) => reminder.id == updatedReminder.id);
+      print(reminderGroup.id);
 
       if (reminderIndex != -1) {
         _reminderData[reminderGroup][reminderIndex] = updatedReminder;
+        print(_reminderData[reminderGroup][reminderIndex] ?? 'This is null');
 
         // Update database
         dataLayer.updateEntryToDB('reminders', updatedReminder.toMap());

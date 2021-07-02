@@ -17,24 +17,27 @@ void main() {
         'id': 1,
         'name': "Do Yoga",
         'reminder_group_id': 1,
-        'interval': 100,
-        'last_done': 100,
+        'interval_value': 1,
+        'interval_type': 'Weeks',
+        'next_date': 100,
         'description': null
       },
       {
         'id': 2,
         'name': "Water the Plants",
         'reminder_group_id': 1,
-        'interval': 100,
-        'last_done': 100,
+        'interval_value': 1,
+        'interval_type': 'Weeks',
+        'next_date': 100,
         'description': null
       },
       {
         'id': 3,
         'name': "Call Nelson",
         'reminder_group_id': 2,
-        'interval': 100,
-        'last_done': 100,
+        'interval_value': 1,
+        'interval_type': 'Weeks',
+        'next_date': 100,
         'description': null
       }
     ]
@@ -77,8 +80,9 @@ void main() {
         'id': 4,
         'name': "Call Kexin",
         'reminder_group_id': 2,
-        'interval': 100,
-        'last_done': 100,
+        'interval_value': 1,
+        'interval_type': 'Weeks',
+        'next_date': 100,
         'description': null
       };
       expect(await mockDBHelper.newEntryToDB('reminders', entry), 4);
@@ -89,8 +93,9 @@ void main() {
         'id': 3,
         'name': "Call Yi Lei",
         'reminder_group_id': 2,
-        'interval': 100,
-        'last_done': 100,
+        'interval_value': 1,
+        'interval_type': 'Weeks',
+        'next_date': 100,
         'description': null
       };
       expect(await mockDBHelper.updateEntryToDB('reminders', entry), 3);
@@ -101,8 +106,9 @@ void main() {
         'id': 3,
         'name': "Call Nelson",
         'reminder_group_id': 2,
-        'interval': 100,
-        'last_done': 100,
+        'interval_value': 1,
+        'interval_type': 'Weeks',
+        'next_date': 100,
         'description': null
       };
       expect(await mockDBHelper.deleteFromDB('reminders', entry), 3);
@@ -129,22 +135,25 @@ void main() {
           id: 1,
           name: "Do Yoga",
           reminderGroupID: 1,
-          interval: 100,
-          lastDone: 100,
+          intervalValue: 1,
+          intervalType: 'Weeks',
+          nextDate: DateTime.fromMillisecondsSinceEpoch(100),
           description: null);
       Reminder waterPlants = Reminder(
           id: 2,
           name: "Water the Plants",
           reminderGroupID: 1,
-          interval: 100,
-          lastDone: 100,
+          intervalValue: 1,
+          intervalType: 'Weeks',
+          nextDate: DateTime.fromMillisecondsSinceEpoch(100),
           description: null);
       Reminder nelson = Reminder(
           id: 3,
           name: "Call Nelson",
           reminderGroupID: 2,
-          interval: 100,
-          lastDone: 100,
+          intervalValue: 1,
+          intervalType: 'Weeks',
+          nextDate: DateTime.fromMillisecondsSinceEpoch(100),
           description: null);
 
       initialExpected = {
@@ -166,8 +175,9 @@ void main() {
           id: 0,
           name: "Call Kexin",
           reminderGroupID: 5,
-          interval: 100,
-          lastDone: 100,
+          intervalValue: 1,
+          intervalType: 'Weeks',
+          nextDate: DateTime.fromMillisecondsSinceEpoch(100),
           description: null
         ));
 
@@ -176,8 +186,9 @@ void main() {
           id: 0,
           name: "Call Kexin",
           reminderGroupID: 2,
-          interval: 100,
-          lastDone: 100,
+          intervalValue: 1,
+          intervalType: 'Weeks',
+          nextDate: DateTime.fromMillisecondsSinceEpoch(100),
           description: null
         ));
 
@@ -188,8 +199,9 @@ void main() {
           id: 4,
           name: "Call Kexin",
           reminderGroupID: 2,
-          interval: 100,
-          lastDone: 100,
+          intervalValue: 1,
+          intervalType: 'Weeks',
+          nextDate: DateTime.fromMillisecondsSinceEpoch(100),
           description: null
         )
       );
@@ -202,8 +214,9 @@ void main() {
           id: 4,
           name: "Call Kexin",
           reminderGroupID: 2,
-          interval: 100,
-          lastDone: 100,
+          intervalValue: 1,
+          intervalType: 'Weeks',
+          nextDate: DateTime.fromMillisecondsSinceEpoch(100),
           description: null
         ));
 
@@ -212,8 +225,9 @@ void main() {
           id: 3,
           name: "Call Yi Lei",
           reminderGroupID: 5,
-          interval: 100,
-          lastDone: 100,
+          intervalValue: 1,
+          intervalType: 'Weeks',
+          nextDate: DateTime.fromMillisecondsSinceEpoch(100),
           description: null
         ));
 
@@ -222,8 +236,9 @@ void main() {
           id: 3,
           name: "Call Yi Lei",
           reminderGroupID: 2,
-          interval: 100,
-          lastDone: 100,
+          intervalValue: 1,
+          intervalType: 'Weeks',
+          nextDate: DateTime.fromMillisecondsSinceEpoch(100),
           description: null
         ));
 
@@ -234,8 +249,9 @@ void main() {
           id: 3,
           name: "Call Yi Lei",
           reminderGroupID: 2,
-          interval: 100,
-          lastDone: 100,
+          intervalValue: 1,
+          intervalType: 'Weeks',
+          nextDate: DateTime.fromMillisecondsSinceEpoch(100),
           description: null
         );
       expect(await reminderDataState.reminderData, expectedResult);
@@ -247,8 +263,9 @@ void main() {
           id: 4,
           name: "Call Kexin",
           reminderGroupID: 2,
-          interval: 100,
-          lastDone: 100,
+          intervalValue: 1,
+          intervalType: 'Weeks',
+          nextDate: DateTime.fromMillisecondsSinceEpoch(100),
           description: null
         ));
 
@@ -257,8 +274,9 @@ void main() {
           id: 2,
           name: "Water the Plants",
           reminderGroupID: 5,
-          interval: 100,
-          lastDone: 100,
+          intervalValue: 1,
+          intervalType: 'Weeks',
+          nextDate: DateTime.fromMillisecondsSinceEpoch(100),
           description: null
         ));
       
@@ -267,8 +285,9 @@ void main() {
           id: 2,
           name: "Water the Plants",
           reminderGroupID: 1,
-          interval: 100,
-          lastDone: 100,
+          intervalValue: 1,
+          intervalType: 'Weeks',
+          nextDate: DateTime.fromMillisecondsSinceEpoch(100),
           description: null
         ));
 
@@ -299,22 +318,25 @@ void main() {
           id: 1,
           name: "Do Yoga",
           reminderGroupID: 1,
-          interval: 100,
-          lastDone: 100,
+          intervalValue: 1,
+          intervalType: 'Weeks',
+          nextDate: DateTime.fromMillisecondsSinceEpoch(100),
           description: null);
       Reminder waterPlants = Reminder(
           id: 2,
           name: "Water the Plants",
           reminderGroupID: 1,
-          interval: 100,
-          lastDone: 100,
+          intervalValue: 1,
+          intervalType: 'Weeks',
+          nextDate: DateTime.fromMillisecondsSinceEpoch(100),
           description: null);
       Reminder nelson = Reminder(
           id: 3,
           name: "Call Nelson",
           reminderGroupID: 2,
-          interval: 100,
-          lastDone: 100,
+          intervalValue: 1,
+          intervalType: 'Weeks',
+          nextDate: DateTime.fromMillisecondsSinceEpoch(100),
           description: null);
 
       initialExpected = {

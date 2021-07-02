@@ -42,8 +42,9 @@ class DBHelper {
             id INTEGER PRIMARY KEY,
             name TEXT NOT NULL,
             reminder_group_id INTEGER,
-            interval INTEGER NOT NULL,
-            last_done INTEGER NOT NULL,
+            interval_value INTEGER NOT NULL,
+            interval_type TEXT NOT NULL,
+            next_date INTEGER NOT NULL,
             description TEXT,
             FOREIGN KEY (reminder_group_id)
               REFERENCES reminder_groups (id)
@@ -90,10 +91,11 @@ class DBHelper {
   updateEntryToDB(String databaseName, Map<String, dynamic> entry) async {
     final db = await database;
 
-    var id = await db.update(databaseName,
+    var id = await db.update(
+      databaseName,
       entry,
       where: 'id = ?',
-      whereArgs: entry['id']);
+      whereArgs:[ entry['id']]);
 
     return id;
   }
@@ -102,7 +104,8 @@ class DBHelper {
   deleteFromDB(String databaseName, Map<String, dynamic> entry) async {
     final db = await database;
 
-    var id = await db.delete(databaseName,
+    var id = await db.delete(
+      databaseName,
       where: 'id = ?',
       whereArgs: entry['id']);
 

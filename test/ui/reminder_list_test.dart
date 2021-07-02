@@ -19,22 +19,25 @@ void main () {
         id: 1,
         name: "Do Yoga",
         reminderGroupID: 1,
-        interval: 100,
-        lastDone: 100,
+        intervalValue: 1,
+        intervalType: 'Weeks',
+        nextDate: DateTime.fromMillisecondsSinceEpoch(100),
         description: null);
     Reminder waterPlants = Reminder(
         id: 2,
         name: "Water the Plants",
         reminderGroupID: 1,
-        interval: 100,
-        lastDone: 100,
+        intervalValue: 1,
+        intervalType: 'Weeks',
+        nextDate: DateTime.fromMillisecondsSinceEpoch(100),
         description: null);
     Reminder nelson = Reminder(
         id: 3,
         name: "Call Nelson",
         reminderGroupID: 2,
-        interval: 100,
-        lastDone: 100,
+        intervalValue: 1,
+        intervalType: 'Weeks',
+        nextDate: DateTime.fromMillisecondsSinceEpoch(100),
         description: null);
 
     final Map<ReminderGroup, List<Reminder>> mockData = {

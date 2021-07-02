@@ -4,7 +4,7 @@ import 'package:provider/provider.dart';
 
 import 'utils/domain_layer/reminder_data_state.dart';
 import 'ui/reminder_list.dart';
-import 'ui/new_reminder_form_dialog.dart';
+import 'ui/create_new_navigation_dialog.dart';
 
 import 'utils/data_layer/setup_debug_db.dart';
 
@@ -52,7 +52,7 @@ class IntervallicScaffold extends StatelessWidget {
             context: context,
             barrierDismissible: true,
             builder: (BuildContext context) {
-              return NewReminderFormDialog();
+              return CreateNewNavigationDialog();
             }
             );
         },

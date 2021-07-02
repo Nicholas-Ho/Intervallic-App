@@ -18,6 +18,7 @@ class ReminderList extends StatelessWidget {
               builder: (context, AsyncSnapshot<Map<ReminderGroup, List<Reminder>>> snapshot) {
                 if (snapshot.hasData) {
                   return ListView(
+                    physics: BouncingScrollPhysics(),
                     children: generateContainers(snapshot.data),
                     padding: const EdgeInsets.all(10),
                   );
@@ -102,7 +103,9 @@ class RemindersInGroup extends StatelessWidget {
 
   @override
   Widget build(context) {
-    return Column(
+    return ListView(
+      shrinkWrap: true,
+      physics: NeverScrollableScrollPhysics(),
       children: new List.generate(reminders.length, (index) {
         return ReminderTile(reminder: reminders[index]);
       }),
