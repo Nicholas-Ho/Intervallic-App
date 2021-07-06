@@ -119,22 +119,19 @@ class ReminderDataState extends ChangeNotifier {
   }
 
   // Updating an existing Reminder
-  updateReminder(Reminder updatedReminder) async {
+  updateReminder(Reminder updatedReminder, {bool rebuild = true}) async {
     try {
       final data = await reminderData;
       final reminderGroup = data.keys.firstWhere((group) => group.id == updatedReminder.reminderGroupID);
-      print(data[reminderGroup]);
       final reminderIndex = data[reminderGroup].indexWhere((reminder) => reminder.id == updatedReminder.id);
-      print(reminderGroup.id);
 
       if (reminderIndex != -1) {
         _reminderData[reminderGroup][reminderIndex] = updatedReminder;
-        print(_reminderData[reminderGroup][reminderIndex] ?? 'This is null');
 
         // Update database
         dataLayer.updateEntryToDB('reminders', updatedReminder.toMap());
 
-        notifyListeners();
+        if(rebuild) { notifyListeners(); }
       } else {
         print('Reminder does not exist. Reminder not updated.');
       }

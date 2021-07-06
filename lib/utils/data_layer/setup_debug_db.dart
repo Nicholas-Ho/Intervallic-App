@@ -24,7 +24,7 @@ Future<void> setupDebugDatabase() async {
         reminderGroupID: 1,
         intervalValue: 1,
         intervalType: 'Weeks',
-        nextDate: DateTime.now().add(Duration(days: 7)),
+        nextDate: DateTime.now().add(Duration(days: 3)),
         description: null);
     
     Reminder waterPlants = Reminder(
@@ -33,7 +33,7 @@ Future<void> setupDebugDatabase() async {
         reminderGroupID: 1,
         intervalValue: 1,
         intervalType: 'Weeks',
-        nextDate: DateTime.now().add(Duration(days: 7)),
+        nextDate: DateTime.now().add(Duration(days: 3)),
         description: null);
 
     Reminder nelson = Reminder(
@@ -42,7 +42,7 @@ Future<void> setupDebugDatabase() async {
         reminderGroupID: 2,
         intervalValue: 1,
         intervalType: 'Weeks',
-        nextDate: DateTime.now().add(Duration(days: 7)),
+        nextDate: DateTime.now().add(Duration(days: 3)),
         description: null);
 
     await dataLayer.newEntryToDB('reminders', doYoga.toMap());
