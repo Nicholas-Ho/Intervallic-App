@@ -4,7 +4,7 @@ import 'package:mockito/mockito.dart';
 
 import 'package:provider/provider.dart';
 
-import 'package:intervallic_app/ui/new_reminder_group_form_dialog.dart';
+import 'package:intervallic_app/ui/dialogs/reminder_group_dialogs/new_reminder_group_form_dialog.dart';
 import 'package:intervallic_app/utils/domain_layer/reminder_data_state.dart';
 import 'package:intervallic_app/models/models.dart';
 

@@ -12,3 +12,7 @@ final intervallicTheme = ThemeData(
 
   fontFamily: 'VAGRounded',
 );
+
+// Green: 0xff99FF99
+// Red: 0xffec1c24
+// Orange: 0xffffcc66

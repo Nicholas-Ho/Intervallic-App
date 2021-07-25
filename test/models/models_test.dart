@@ -4,7 +4,7 @@ import 'package:intervallic_app/models/models.dart';
 
 void main() {
   group('Tests for Reminder Group.', () {
-    ReminderGroup reminderGroup;
+    late ReminderGroup reminderGroup;
     setUp(() {
       reminderGroup = ReminderGroup(id: 1, name: "Daily Reminders");
     });
@@ -47,14 +47,14 @@ void main() {
   });
 
   group('Tests for Reminder.', () {
-    Reminder reminder;
+    late Reminder reminder;
     setUp(() {
       reminder = Reminder(
         id: 1,
         name: "Do Yoga",
         reminderGroupID: 1,
         intervalValue: 1,
-        intervalType: 'Weeks',
+        intervalType: IntervalType.weeks,
         nextDate: DateTime.fromMillisecondsSinceEpoch(100),
         description: null);
     });
@@ -66,7 +66,7 @@ void main() {
       expect(reminder.name, 'Do Yoga');
       expect(reminder.reminderGroupID, 1);
       expect(reminder.intervalValue, 1);
-      expect(reminder.intervalType, 'Weeks');
+      expect(reminder.intervalType, IntervalType.weeks);
       expect(reminder.nextDate, DateTime.fromMillisecondsSinceEpoch(100));
       expect(reminder.description, null);
     });
@@ -79,7 +79,7 @@ void main() {
       expect(reminder.name, 'Do Yoga');
       expect(reminder.reminderGroupID, 1);
       expect(reminder.intervalValue, 1);
-      expect(reminder.intervalType, 'Weeks');
+      expect(reminder.intervalType, IntervalType.weeks);
       expect(reminder.nextDate, DateTime.fromMillisecondsSinceEpoch(100));
       expect(reminder.description, null);
     });
@@ -98,7 +98,7 @@ void main() {
       expect(reminder.name, 'Do Yoga');
       expect(reminder.reminderGroupID, 1);
       expect(reminder.intervalValue, 1);
-      expect(reminder.intervalType, 'Weeks');
+      expect(reminder.intervalType, IntervalType.weeks);
       expect(reminder.nextDate, expectedDateTime); // 604800000 milliseconds in a week
       expect(reminder.description, null);
     });
@@ -109,7 +109,7 @@ void main() {
         'name': "Do Yoga",
         'reminder_group_id': 1,
         'interval_value': 1,
-        'interval_type': 'Weeks',
+        'interval_type': 'weeks',
         'next_date': 100,
         'description': null
       };
@@ -124,7 +124,7 @@ void main() {
         'name': "Water the Plants",
         'reminder_group_id': 1,
         'interval_value': 1,
-        'interval_type': 'Weeks',
+        'interval_type': 'weeks',
         'next_date': 100,
         'description': null
       };
@@ -135,7 +135,7 @@ void main() {
         name: "Water the Plants",
         reminderGroupID: 1,
         intervalValue: 1,
-        intervalType: 'Weeks',
+        intervalType: IntervalType.weeks,
         nextDate: DateTime.fromMillisecondsSinceEpoch(100),
         description: null
       );

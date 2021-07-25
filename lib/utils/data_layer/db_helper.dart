@@ -12,10 +12,10 @@ class DBHelper {
     return _dbHelperSingleton;
   }
 
-  static Database _database;
+  static Database? _database;
 
   // Lazy getter for database
-  Future<Database> get database async {
+  Future<Database?> get database async {
     if (_database != null) {
       return _database;
     }
@@ -62,26 +62,26 @@ class DBHelper {
   newEntryToDB(String databaseName, Map<String, dynamic> entry) async {
     final db = await database;
 
-    var id = await db.insert(databaseName, entry);
+    var id = await db!.insert(databaseName, entry);
 
     return id;
   }
 
   // General Function to query database
-  Future<List<Map<String, dynamic>>> queryDatabase(String databaseName, {List<String> columns, String whereColumn, String whereArg}) async {
+  Future<List<Map<String, dynamic>>> queryDatabase(String databaseName, {List<String>? columns, String? whereColumn, String? whereArg}) async {
     final db = await database;
 
     if (whereColumn != null && whereArg != null) {
       String whereString = "$whereColumn = ?";
       List<Object> whereArgsList = [whereArg];
-      return await db.query(
+      return await db!.query(
         databaseName,
         columns: columns,
         where: whereString,
         whereArgs: whereArgsList,
       );
     } else {
-      return await db.query(
+      return await db!.query(
         databaseName,
         columns: columns); // Passing null into columns will return all columns.
     }
@@ -91,7 +91,7 @@ class DBHelper {
   updateEntryToDB(String databaseName, Map<String, dynamic> entry) async {
     final db = await database;
 
-    var id = await db.update(
+    var id = await db!.update(
       databaseName,
       entry,
       where: 'id = ?',
@@ -104,7 +104,7 @@ class DBHelper {
   deleteFromDB(String databaseName, Map<String, dynamic> entry) async {
     final db = await database;
 
-    var id = await db.delete(
+    var id = await db!.delete(
       databaseName,
       where: 'id = ?',
       whereArgs: entry['id']);

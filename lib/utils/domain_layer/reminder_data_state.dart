@@ -3,22 +3,24 @@ import 'package:flutter/foundation.dart';
 import 'package:intervallic_app/models/models.dart';
 import '../data_layer/db_helper.dart';
 import 'id_manager.dart';
+import 'local_notification_manager.dart';
 
 // State of all reminders and reminder groups. Part of the domain layer using Provider.
 class ReminderDataState extends ChangeNotifier {
-  Map<ReminderGroup, List<Reminder>> _reminderData;
-  IdManager _idManager;
+  Map<ReminderGroup, List<Reminder>>? _reminderData;
+  late IdManager _idManager;
+  late LocalNotificationManager _localNotificationManager;
 
   DBHelper dataLayer = DBHelper();
 
   // Lazy getter for reminderData
   Future<Map<ReminderGroup, List<Reminder>>> get reminderData async {
     if (_reminderData != null) {
-      return _reminderData;
+      return _reminderData!;
     }
 
     _reminderData = await _getDBData();
-    return _reminderData;
+    return _reminderData!;
   }
 
   _getDBData() async {
@@ -35,6 +37,7 @@ class ReminderDataState extends ChangeNotifier {
     }
 
     _idManager = await _initIDManager(); // Initialise ID Manager here
+    _localNotificationManager = await _initLocalNotificationManager(reminderData); // Initialise Local Notification Manager here
 
     return reminderData;
   }
@@ -50,7 +53,7 @@ class ReminderDataState extends ChangeNotifier {
   }
 
   // Query Reminders by Reminder Group ID
-  Future<List<Reminder>> _getRemindersByGroup(int group) async {
+  Future<List<Reminder>> _getRemindersByGroup(int? group) async {
     final List<Map<String, dynamic>> maps = await dataLayer
         .queryDatabase('reminders', whereColumn: 'reminder_group_id', whereArg: '$group');
 
@@ -61,8 +64,8 @@ class ReminderDataState extends ChangeNotifier {
 
   _initIDManager() async {
     // Query all Primary Keys
-    Future<Map<String, List<int>>> _getAllPrimaryKeys(List<String> tables) async {
-      Map<String, List<int>> keys = {};
+    Future<Map<String, List<int?>>> _getAllPrimaryKeys(List<String> tables) async {
+      Map<String, List<int?>> keys = {};
       for (int i = 0; i < tables.length; i++) {
         List<Map<String, dynamic>> pkMap = await dataLayer.queryDatabase(tables[i], columns: ['id']);
         keys[tables[i]] = List.generate(pkMap.length, (i) {
@@ -76,6 +79,13 @@ class ReminderDataState extends ChangeNotifier {
     return IdManager(await _getAllPrimaryKeys(tables));
   }
 
+  _initLocalNotificationManager(Map<ReminderGroup, List<Reminder>> data) async {
+    final localNotificationManager = LocalNotificationManager();
+    localNotificationManager.init(data);
+    
+    return localNotificationManager;
+  }
+
   // Adding new Reminder
   newReminder(Reminder newReminder) async {
     try {
@@ -83,9 +93,12 @@ class ReminderDataState extends ChangeNotifier {
       final reminderGroup = data.keys.firstWhere((group) => group.id == newReminder.reminderGroupID);
 
       // Only call nextAvailableID if no error is thrown
-      // Reminder().setID() is not in-place because Equatable is immutable
       newReminder = newReminder.setID(_idManager.nextAvailableID('reminders'));
-      _reminderData[reminderGroup].add(newReminder);
+      _reminderData![reminderGroup]!.add(newReminder);
+      print(await reminderData);
+
+      // Create notification
+      _localNotificationManager.addNotifications(newReminder);
 
       // Add to database
      dataLayer.newEntryToDB('reminders', newReminder.toMap());
@@ -101,19 +114,18 @@ class ReminderDataState extends ChangeNotifier {
     final data = await reminderData;
     final isTaken = data.keys.firstWhere((group) => group.name == newGroup.name, orElse: () {
       // Only call nextAvailableID if no error is thrown
-      // ReminderGroup().setID() is not in-place because Equatable is immutable
       newGroup = newGroup.setID(_idManager.nextAvailableID('reminder_groups'));
-      _reminderData[newGroup] = [];
+      _reminderData![newGroup] = [];
 
       // Add to database
       dataLayer.newEntryToDB('reminder_groups', newGroup.toMap());
 
       notifyListeners();
 
-      return null;
+      return ReminderGroup(id: -1); // Placeholder null
     });
 
-    if (isTaken != null) {
+    if (isTaken != ReminderGroup(id: -1)) {
       print('Identical Reminder Group exists!');
     }
   }
@@ -123,17 +135,46 @@ class ReminderDataState extends ChangeNotifier {
     try {
       final data = await reminderData;
       final reminderGroup = data.keys.firstWhere((group) => group.id == updatedReminder.reminderGroupID);
-      final reminderIndex = data[reminderGroup].indexWhere((reminder) => reminder.id == updatedReminder.id);
+      final reminderIndex = data[reminderGroup]!.indexWhere((reminder) => reminder.id == updatedReminder.id);
 
       if (reminderIndex != -1) {
-        _reminderData[reminderGroup][reminderIndex] = updatedReminder;
+        _reminderData![reminderGroup]![reminderIndex] = updatedReminder;
+
+        // Update notification
+        _localNotificationManager.updateNotifications(updatedReminder);
 
         // Update database
         dataLayer.updateEntryToDB('reminders', updatedReminder.toMap());
 
         if(rebuild) { notifyListeners(); }
       } else {
-        print('Reminder does not exist. Reminder not updated.');
+        // Taking into account if a Reminder's Reminder Group was changed.
+        bool isFound = false;
+        
+        for(ReminderGroup group in data.keys) {
+          for(Reminder reminder in data[group]!) {
+            if(reminder.id == updatedReminder.id) {
+              if(reminder.reminderGroupID != updatedReminder.reminderGroupID) {
+                data[group]!.remove(reminder);
+                data[reminderGroup]!.add(updatedReminder);
+
+                // Update database
+                dataLayer.updateEntryToDB('reminders', updatedReminder.toMap());
+
+                if(rebuild) { notifyListeners(); }
+              }
+              
+              isFound = true;
+              break;
+            }
+          }
+
+          if(isFound == true) { break; }
+        }
+
+        if(isFound == true) {
+          print('Reminder does not exist. Reminder not updated.');
+        }
       }
     } on StateError {
       print('Reminder group does not exist. Reminder not updated.');
@@ -173,10 +214,13 @@ class ReminderDataState extends ChangeNotifier {
       final data = await reminderData;
       final reminderGroup = data.keys.firstWhere((group) => group.id == deletedReminder.reminderGroupID);
 
-      final isInGroup = _reminderData[reminderGroup].remove(deletedReminder);
+      final isInGroup = _reminderData![reminderGroup]!.remove(deletedReminder);
 
       if(isInGroup) {
-        _idManager.removeID('reminders', deletedReminder.id); // Only remove ID if Reminder was removed
+        _idManager.removeID('reminders', deletedReminder.id!); // Only remove ID if Reminder was removed
+
+        // Create notification
+        _localNotificationManager.cancelNotifications(deletedReminder);
 
         // Delete from database
         dataLayer.deleteFromDB('reminders', deletedReminder.toMap());
@@ -193,10 +237,10 @@ class ReminderDataState extends ChangeNotifier {
   // Deleting an existing Reminder Group
   deleteReminderGroup(ReminderGroup deletedReminderGroup) async {
     _reminderData ?? await reminderData; // Ensures that _getDBData has been called
-    final isInGroup = _reminderData.remove(deletedReminderGroup);
+    final isInGroup = _reminderData!.remove(deletedReminderGroup);
 
     if(isInGroup != null) {
-      _idManager.removeID('reminder_groups', deletedReminderGroup.id);
+      _idManager.removeID('reminder_groups', deletedReminderGroup.id!);
 
       // Delete from database
       dataLayer.deleteFromDB('reminder_groups', deletedReminderGroup.toMap());

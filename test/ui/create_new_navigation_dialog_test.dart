@@ -5,7 +5,7 @@ import 'package:intl/intl.dart';
 
 import 'package:provider/provider.dart';
 
-import 'package:intervallic_app/ui/create_new_navigation_dialog.dart';
+import 'package:intervallic_app/ui/dialogs/create_new_navigation_dialog.dart';
 import 'package:intervallic_app/utils/domain_layer/reminder_data_state.dart';
 import 'package:intervallic_app/models/models.dart';
 
@@ -122,7 +122,7 @@ Widget _wrapDialogWithMaterialApp (Widget dialog) {
 
 // Mock Reminder Data State
 class MockReminderDataState extends Mock implements ReminderDataState {
-  Map<ReminderGroup, List<Reminder>> mockData;
+  late Map<ReminderGroup, List<Reminder>> mockData;
 
   @override
   Future<Map<ReminderGroup, List<Reminder>>> get reminderData async {

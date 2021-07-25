@@ -18,7 +18,7 @@ void main() {
         'name': "Do Yoga",
         'reminder_group_id': 1,
         'interval_value': 1,
-        'interval_type': 'Weeks',
+        'interval_type': 'weeks',
         'next_date': 100,
         'description': null
       },
@@ -27,7 +27,7 @@ void main() {
         'name': "Water the Plants",
         'reminder_group_id': 1,
         'interval_value': 1,
-        'interval_type': 'Weeks',
+        'interval_type': 'weeks',
         'next_date': 100,
         'description': null
       },
@@ -36,7 +36,7 @@ void main() {
         'name': "Call Nelson",
         'reminder_group_id': 2,
         'interval_value': 1,
-        'interval_type': 'Weeks',
+        'interval_type': 'weeks',
         'next_date': 100,
         'description': null
       }
@@ -44,7 +44,7 @@ void main() {
   };
 
   group('Diagnostic test for MockDBHelper.', () {
-    MockDBHelper mockDBHelper;
+    late MockDBHelper mockDBHelper;
 
     setUp(() {
       mockDBHelper = MockDBHelper();
@@ -81,7 +81,7 @@ void main() {
         'name': "Call Kexin",
         'reminder_group_id': 2,
         'interval_value': 1,
-        'interval_type': 'Weeks',
+        'interval_type': 'weeks',
         'next_date': 100,
         'description': null
       };
@@ -94,7 +94,7 @@ void main() {
         'name': "Call Yi Lei",
         'reminder_group_id': 2,
         'interval_value': 1,
-        'interval_type': 'Weeks',
+        'interval_type': 'weeks',
         'next_date': 100,
         'description': null
       };
@@ -107,7 +107,7 @@ void main() {
         'name': "Call Nelson",
         'reminder_group_id': 2,
         'interval_value': 1,
-        'interval_type': 'Weeks',
+        'interval_type': 'weeks',
         'next_date': 100,
         'description': null
       };
@@ -116,9 +116,9 @@ void main() {
   });
 
   group('Tests for ReminderDataState methods for Reminders.', () {
-    ReminderDataState reminderDataState;
+    late ReminderDataState reminderDataState;
     MockDBHelper mockDBHelper;
-    Map<ReminderGroup, List<Reminder>> initialExpected;
+    Map<ReminderGroup, List<Reminder>>? initialExpected;
 
     setUp(() {
       mockDBHelper = MockDBHelper();
@@ -136,7 +136,7 @@ void main() {
           name: "Do Yoga",
           reminderGroupID: 1,
           intervalValue: 1,
-          intervalType: 'Weeks',
+          intervalType: IntervalType.weeks,
           nextDate: DateTime.fromMillisecondsSinceEpoch(100),
           description: null);
       Reminder waterPlants = Reminder(
@@ -144,7 +144,7 @@ void main() {
           name: "Water the Plants",
           reminderGroupID: 1,
           intervalValue: 1,
-          intervalType: 'Weeks',
+          intervalType: IntervalType.weeks,
           nextDate: DateTime.fromMillisecondsSinceEpoch(100),
           description: null);
       Reminder nelson = Reminder(
@@ -152,7 +152,7 @@ void main() {
           name: "Call Nelson",
           reminderGroupID: 2,
           intervalValue: 1,
-          intervalType: 'Weeks',
+          intervalType: IntervalType.weeks,
           nextDate: DateTime.fromMillisecondsSinceEpoch(100),
           description: null);
 
@@ -176,7 +176,7 @@ void main() {
           name: "Call Kexin",
           reminderGroupID: 5,
           intervalValue: 1,
-          intervalType: 'Weeks',
+          intervalType: IntervalType.weeks,
           nextDate: DateTime.fromMillisecondsSinceEpoch(100),
           description: null
         ));
@@ -187,20 +187,20 @@ void main() {
           name: "Call Kexin",
           reminderGroupID: 2,
           intervalValue: 1,
-          intervalType: 'Weeks',
+          intervalType: IntervalType.weeks,
           nextDate: DateTime.fromMillisecondsSinceEpoch(100),
           description: null
         ));
 
       // Set up and check against expected result
-      Map<ReminderGroup, List<Reminder>> expectedResult = initialExpected;
-      expectedResult[expectedResult.keys.elementAt(1)].add(
+      Map<ReminderGroup, List<Reminder>> expectedResult = initialExpected!;
+      expectedResult[expectedResult.keys.elementAt(1)]!.add(
         Reminder(
           id: 4,
           name: "Call Kexin",
           reminderGroupID: 2,
           intervalValue: 1,
-          intervalType: 'Weeks',
+          intervalType: IntervalType.weeks,
           nextDate: DateTime.fromMillisecondsSinceEpoch(100),
           description: null
         )
@@ -215,7 +215,7 @@ void main() {
           name: "Call Kexin",
           reminderGroupID: 2,
           intervalValue: 1,
-          intervalType: 'Weeks',
+          intervalType: IntervalType.weeks,
           nextDate: DateTime.fromMillisecondsSinceEpoch(100),
           description: null
         ));
@@ -226,7 +226,7 @@ void main() {
           name: "Call Yi Lei",
           reminderGroupID: 5,
           intervalValue: 1,
-          intervalType: 'Weeks',
+          intervalType: IntervalType.weeks,
           nextDate: DateTime.fromMillisecondsSinceEpoch(100),
           description: null
         ));
@@ -237,20 +237,20 @@ void main() {
           name: "Call Yi Lei",
           reminderGroupID: 2,
           intervalValue: 1,
-          intervalType: 'Weeks',
+          intervalType: IntervalType.weeks,
           nextDate: DateTime.fromMillisecondsSinceEpoch(100),
           description: null
         ));
 
       // Set up and check against expected result
-      Map<ReminderGroup, List<Reminder>> expectedResult = initialExpected;
-      expectedResult[expectedResult.keys.elementAt(1)][0] =
+      Map<ReminderGroup, List<Reminder>> expectedResult = initialExpected!;
+      expectedResult[expectedResult.keys.elementAt(1)]![0] =
         Reminder(
           id: 3,
           name: "Call Yi Lei",
           reminderGroupID: 2,
           intervalValue: 1,
-          intervalType: 'Weeks',
+          intervalType: IntervalType.weeks,
           nextDate: DateTime.fromMillisecondsSinceEpoch(100),
           description: null
         );
@@ -264,7 +264,7 @@ void main() {
           name: "Call Kexin",
           reminderGroupID: 2,
           intervalValue: 1,
-          intervalType: 'Weeks',
+          intervalType: IntervalType.weeks,
           nextDate: DateTime.fromMillisecondsSinceEpoch(100),
           description: null
         ));
@@ -275,7 +275,7 @@ void main() {
           name: "Water the Plants",
           reminderGroupID: 5,
           intervalValue: 1,
-          intervalType: 'Weeks',
+          intervalType: IntervalType.weeks,
           nextDate: DateTime.fromMillisecondsSinceEpoch(100),
           description: null
         ));
@@ -286,22 +286,22 @@ void main() {
           name: "Water the Plants",
           reminderGroupID: 1,
           intervalValue: 1,
-          intervalType: 'Weeks',
+          intervalType: IntervalType.weeks,
           nextDate: DateTime.fromMillisecondsSinceEpoch(100),
           description: null
         ));
 
       // Set up and check against expected result
-      Map<ReminderGroup, List<Reminder>> expectedResult = initialExpected;
-      expectedResult[expectedResult.keys.elementAt(0)].removeAt(1);
+      Map<ReminderGroup, List<Reminder>> expectedResult = initialExpected!;
+      expectedResult[expectedResult.keys.elementAt(0)]!.removeAt(1);
       expect(await reminderDataState.reminderData, expectedResult);
     });
   });
 
   group('Tests for ReminderDataState methods for Reminder Groups.', () {
-    ReminderDataState reminderDataState;
+    late ReminderDataState reminderDataState;
     MockDBHelper mockDBHelper;
-    Map<ReminderGroup, List<Reminder>> initialExpected;
+    late Map<ReminderGroup, List<Reminder>> initialExpected;
 
     setUp(() {
       mockDBHelper = MockDBHelper();
@@ -319,7 +319,7 @@ void main() {
           name: "Do Yoga",
           reminderGroupID: 1,
           intervalValue: 1,
-          intervalType: 'Weeks',
+          intervalType: IntervalType.weeks,
           nextDate: DateTime.fromMillisecondsSinceEpoch(100),
           description: null);
       Reminder waterPlants = Reminder(
@@ -327,7 +327,7 @@ void main() {
           name: "Water the Plants",
           reminderGroupID: 1,
           intervalValue: 1,
-          intervalType: 'Weeks',
+          intervalType: IntervalType.weeks,
           nextDate: DateTime.fromMillisecondsSinceEpoch(100),
           description: null);
       Reminder nelson = Reminder(
@@ -335,7 +335,7 @@ void main() {
           name: "Call Nelson",
           reminderGroupID: 2,
           intervalValue: 1,
-          intervalType: 'Weeks',
+          intervalType: IntervalType.weeks,
           nextDate: DateTime.fromMillisecondsSinceEpoch(100),
           description: null);
 
@@ -383,7 +383,7 @@ void main() {
       ReminderGroup habitForming = ReminderGroup(id: 1, name: "Habit Forming");
       ReminderGroup keepInTouch = ReminderGroup(id: 2, name: "Keep In Touch");
       ReminderGroup miscellaneous = ReminderGroup(id: 3, name: "Miscellaneous");
-      Map<ReminderGroup, List<Reminder>> expectedResult = {
+      Map<ReminderGroup, List<Reminder>?> expectedResult = {
         habitForming: [],
         keepInTouch: [],
         miscellaneous: []
@@ -417,11 +417,11 @@ void main() {
 
 // Mock DBHelper
 class MockDBHelper extends Mock implements DBHelper {
-  Map<String, List<Map<String, dynamic>>> mockData;
+  late Map<String, List<Map<String, dynamic>>> mockData;
 
   @override
-  Future<List<Map<String, dynamic>>> queryDatabase(String databaseName, {List<String> columns, String whereColumn, String whereArg}) async {
-    Map<String, dynamic> checkColumns(Map<String, dynamic> element, List<String> columns) {
+  Future<List<Map<String, dynamic>>> queryDatabase(String databaseName, {List<String>? columns, String? whereColumn, String? whereArg}) async {
+    Map<String, dynamic> checkColumns(Map<String, dynamic> element, List<String>? columns) {
       if(columns != null){
         Map<String, dynamic> map = {};
         for(int i = 0; i < columns.length; i++) {
@@ -439,17 +439,17 @@ class MockDBHelper extends Mock implements DBHelper {
     if(whereColumn != null) {
       var whereArgFinal;
       try{
-        whereArgFinal = int.parse(whereArg);
+        whereArgFinal = int.parse(whereArg!);
       } on FormatException {
         whereArgFinal = whereArg;
       }
-      reminders.forEach((element) {
+      reminders!.forEach((element) {
           if(element[whereColumn] == whereArgFinal) {
             results.add(checkColumns(element, columns));
           }
         });
     } else {
-      reminders.forEach((element) {
+      reminders!.forEach((element) {
         results.add(checkColumns(element, columns));
       });
     }

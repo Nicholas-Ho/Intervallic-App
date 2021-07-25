@@ -5,12 +5,12 @@ import 'package:intl/intl.dart';
 
 import 'package:provider/provider.dart';
 
-import 'package:intervallic_app/ui/new_reminder_form_dialog.dart';
+import 'package:intervallic_app/ui/dialogs/reminder_dialogs/new_reminder_form_dialog.dart';
 import 'package:intervallic_app/utils/domain_layer/reminder_data_state.dart';
 import 'package:intervallic_app/models/models.dart';
 
 void main () {
-  MockReminderDataState mockReminderDataState;
+  MockReminderDataState? mockReminderDataState;
   setUp(() {
     // Setting up mock data
     // New Reminder Form Dialog only requires Reminder Groups, not Reminders
@@ -20,7 +20,7 @@ void main () {
       ReminderGroup(id: 3, name: "Miscellaneous"): []
     };
     mockReminderDataState = MockReminderDataState();
-    mockReminderDataState.mockData = mockData;
+    mockReminderDataState!.mockData = mockData;
   });
 
   tearDown(() {}); // TearDown not required as mockReminderDataState is reinitialised in setUp
@@ -29,7 +29,7 @@ void main () {
     testWidgets('Test for emtpy form layout', (WidgetTester tester) async {
       // Set-up
       await tester.pumpWidget(
-        ChangeNotifierProvider<ReminderDataState>.value(
+        ChangeNotifierProvider<ReminderDataState?>.value(
           value: mockReminderDataState, // Provider of Mock Reminder Data State
           builder: (context, _) {
           return _wrapDialogWithMaterialApp(NewReminderFormDialog());
@@ -61,7 +61,7 @@ void main () {
     testWidgets('Test for submitting empty form', (WidgetTester tester) async {
       // Set-up
       await tester.pumpWidget(
-        ChangeNotifierProvider<ReminderDataState>.value(
+        ChangeNotifierProvider<ReminderDataState?>.value(
           value: mockReminderDataState, // Provider of Mock Reminder Data State
           builder: (context, _) {
             return _wrapDialogWithMaterialApp(NewReminderFormDialog());
@@ -89,7 +89,7 @@ void main () {
     testWidgets('Test for successful form submission (no date picker test)', (WidgetTester tester) async {
       // Set-up
       await tester.pumpWidget(
-        ChangeNotifierProvider<ReminderDataState>.value(
+        ChangeNotifierProvider<ReminderDataState?>.value(
           value: mockReminderDataState, // Provider of Mock Reminder Data State
           builder: (context, _) {
             return _wrapDialogWithMaterialApp(NewReminderFormDialog());
@@ -147,7 +147,7 @@ void main () {
 
     // Set-up
     await tester.pumpWidget(
-      ChangeNotifierProvider<ReminderDataState>.value(
+      ChangeNotifierProvider<ReminderDataState?>.value(
         value: mockReminderDataState, // Provider of Mock Reminder Data State
         builder: (context, _) {
           return _wrapDialogWithMaterialApp(NewReminderFormDialog());
@@ -209,7 +209,7 @@ void main () {
       print(testDateString);
       // Set-up
       await tester.pumpWidget(
-        ChangeNotifierProvider<ReminderDataState>.value(
+        ChangeNotifierProvider<ReminderDataState?>.value(
           value: mockReminderDataState, // Provider of Mock Reminder Data State
           builder: (context, _) {
             return _wrapDialogWithMaterialApp(NewReminderFormDialog());
@@ -293,7 +293,7 @@ Widget _wrapDialogWithMaterialApp (Widget dialog) {
 
 // Mock Reminder Data State
 class MockReminderDataState extends Mock implements ReminderDataState {
-  Map<ReminderGroup, List<Reminder>> mockData;
+  late Map<ReminderGroup, List<Reminder>> mockData;
 
   @override
   Future<Map<ReminderGroup, List<Reminder>>> get reminderData async {

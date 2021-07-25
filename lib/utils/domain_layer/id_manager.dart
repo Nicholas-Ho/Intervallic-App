@@ -1,9 +1,9 @@
 // An object to manage the id assignment of data
 class IdManager {
-  Map<String, List<int>> _idMaps;
-  Map<String, int> _nextAvailableIDs;
+  late Map<String, List<int?>> _idMaps;
+  late Map<String, int> _nextAvailableIDs;
 
-  IdManager(Map<String, List<int>> idMaps) { // Pass in the raw values of the SQL query of Primary Keys in a table
+  IdManager(Map<String, List<int?>> idMaps) { // Pass in the raw values of the SQL query of Primary Keys in a table
     _idMaps = {};
     _nextAvailableIDs = {};
     idMaps.forEach((key, value) {
@@ -24,12 +24,12 @@ class IdManager {
   }
 
   int nextAvailableID(String table) {
-    int nextAvailableID = _nextAvailableIDs[table]; // current nextAvailableID
-    _idMaps[table].insert(nextAvailableID - 1, nextAvailableID);
+    int nextAvailableID = _nextAvailableIDs[table]!; // current nextAvailableID
+    _idMaps[table]!.insert(nextAvailableID - 1, nextAvailableID);
 
-    int newAvailableID = _idMaps[table].length + 1;
-    for (int i = nextAvailableID; i < _idMaps[table].length; i++) { // We only need to check from the current nextAvailableID
-      if(_idMaps[table][i] != i + 1) {
+    int newAvailableID = _idMaps[table]!.length + 1;
+    for (int i = nextAvailableID; i < _idMaps[table]!.length; i++) { // We only need to check from the current nextAvailableID
+      if(_idMaps[table]![i] != i + 1) {
         newAvailableID = i + 1;
         break;
       }
@@ -40,11 +40,11 @@ class IdManager {
   }
 
   void removeID(String table, int id) {
-    if (_nextAvailableIDs[table] > id) {
+    if (_nextAvailableIDs[table]! > id) {
       _nextAvailableIDs[table] = id;
     }
 
-    final wasPresent = _idMaps[table].remove(id);
+    final wasPresent = _idMaps[table]!.remove(id);
     
     if(!wasPresent) {
       print('ID was not present!');

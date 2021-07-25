@@ -4,7 +4,7 @@ import 'package:intervallic_app/utils/domain_layer/id_manager.dart';
 
 void main() {
   group('Test with simple datatable.', () {
-    IdManager idManager;
+    late IdManager idManager;
 
     setUp(() {
       Map<String, List<int>> idMaps = {'datatable_1': [1, 2, 3, 4]};
@@ -36,7 +36,7 @@ void main() {
   });
 
   group('Test with complex datatable.', () { // Data table for testing is 'datatable_2'
-    IdManager idManager;
+    late IdManager idManager;
     
     setUp(() {
       Map<String, List<int>> idMaps = {

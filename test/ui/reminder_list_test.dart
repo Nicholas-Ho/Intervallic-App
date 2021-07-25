@@ -4,12 +4,13 @@ import 'package:mockito/mockito.dart';
 
 import 'package:provider/provider.dart';
 
-import 'package:intervallic_app/ui/reminder_list.dart';
+import 'package:intervallic_app/ui/reminder_list/reminder_list.dart';
+import 'package:intervallic_app/ui/reminder_list/tiles.dart';
 import 'package:intervallic_app/utils/domain_layer/reminder_data_state.dart';
 import 'package:intervallic_app/models/models.dart';
 
 void main () {
-  MockReminderDataState mockReminderDataState;
+  MockReminderDataState? mockReminderDataState;
   setUp(() {
     // Setting up initial expected result
     ReminderGroup dailyReminders = ReminderGroup(id: 1, name: "Daily Reminders");
@@ -20,7 +21,7 @@ void main () {
         name: "Do Yoga",
         reminderGroupID: 1,
         intervalValue: 1,
-        intervalType: 'Weeks',
+        intervalType: IntervalType.weeks,
         nextDate: DateTime.fromMillisecondsSinceEpoch(100),
         description: null);
     Reminder waterPlants = Reminder(
@@ -28,7 +29,7 @@ void main () {
         name: "Water the Plants",
         reminderGroupID: 1,
         intervalValue: 1,
-        intervalType: 'Weeks',
+        intervalType: IntervalType.weeks,
         nextDate: DateTime.fromMillisecondsSinceEpoch(100),
         description: null);
     Reminder nelson = Reminder(
@@ -36,7 +37,7 @@ void main () {
         name: "Call Nelson",
         reminderGroupID: 2,
         intervalValue: 1,
-        intervalType: 'Weeks',
+        intervalType: IntervalType.weeks,
         nextDate: DateTime.fromMillisecondsSinceEpoch(100),
         description: null);
 
@@ -46,7 +47,7 @@ void main () {
       miscellaneous: []
     };
     mockReminderDataState = MockReminderDataState();
-    mockReminderDataState.mockData = mockData;
+    mockReminderDataState!.mockData = mockData;
   });
 
   tearDown(() {}); // TearDown not required as mockReminderDataState is reinitialised in setUp
@@ -54,7 +55,7 @@ void main () {
   testWidgets('Test for Reminder List generation', (WidgetTester tester) async {
     // Set-up
     await tester.pumpWidget(
-      ChangeNotifierProvider<ReminderDataState>.value(
+      ChangeNotifierProvider<ReminderDataState?>.value(
         value: mockReminderDataState, // Provider of Mock Reminder Data State
         builder: (context, _) {
           return MaterialApp(
@@ -90,7 +91,7 @@ void main () {
 
 // Mock Reminder Data State
 class MockReminderDataState extends Mock implements ReminderDataState {
-  Map<ReminderGroup, List<Reminder>> mockData;
+  late Map<ReminderGroup, List<Reminder>> mockData;
 
   @override
   Future<Map<ReminderGroup, List<Reminder>>> get reminderData async {

@@ -1,10 +1,11 @@
 import 'dart:async';
 
+import 'package:intervallic_app/utils/local_notifications_service.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
 
 import 'package:intervallic_app/models/models.dart';
-import 'db_helper.dart';
+import 'data_layer/db_helper.dart';
 
 // Helper function for resetting the existing database and setting up the test database
 Future<void> setupDebugDatabase() async {
@@ -23,17 +24,17 @@ Future<void> setupDebugDatabase() async {
         name: "Do Yoga",
         reminderGroupID: 1,
         intervalValue: 1,
-        intervalType: 'Weeks',
+        intervalType: IntervalType.weeks,
         nextDate: DateTime.now().add(Duration(days: 3)),
         description: null);
     
-    Reminder waterPlants = Reminder(
+    Reminder cleanHouse = Reminder(
         id: 2,
-        name: "Water the Plants",
+        name: "Clean the House",
         reminderGroupID: 1,
-        intervalValue: 1,
-        intervalType: 'Weeks',
-        nextDate: DateTime.now().add(Duration(days: 3)),
+        intervalValue: 2,
+        intervalType: IntervalType.weeks,
+        nextDate: DateTime.now().subtract(Duration(days: 3)),
         description: null);
 
     Reminder nelson = Reminder(
@@ -41,12 +42,12 @@ Future<void> setupDebugDatabase() async {
         name: "Call Nelson",
         reminderGroupID: 2,
         intervalValue: 1,
-        intervalType: 'Weeks',
+        intervalType: IntervalType.months,
         nextDate: DateTime.now().add(Duration(days: 3)),
         description: null);
 
     await dataLayer.newEntryToDB('reminders', doYoga.toMap());
-    await dataLayer.newEntryToDB('reminders', waterPlants.toMap());
+    await dataLayer.newEntryToDB('reminders', cleanHouse.toMap());
     await dataLayer.newEntryToDB('reminders', nelson.toMap());
   }
 
@@ -55,4 +56,9 @@ Future<void> setupDebugDatabase() async {
   await deleteDatabase(path);
 
   await addData();
+}
+
+Future<void> clearNotifications() async {
+  LocalNotificationService().init();
+  await LocalNotificationService().clearAll();
 }
