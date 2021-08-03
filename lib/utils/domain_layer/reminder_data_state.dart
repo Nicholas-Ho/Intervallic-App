@@ -9,7 +9,7 @@ import 'local_notification_manager.dart';
 class ReminderDataState extends ChangeNotifier {
   Map<ReminderGroup, List<Reminder>>? _reminderData;
   late IdManager _idManager;
-  late LocalNotificationManager _localNotificationManager;
+  LocalNotificationManager? _localNotificationManager;
 
   DBHelper dataLayer = DBHelper();
 
@@ -80,10 +80,11 @@ class ReminderDataState extends ChangeNotifier {
   }
 
   _initLocalNotificationManager(Map<ReminderGroup, List<Reminder>> data) async {
-    final localNotificationManager = LocalNotificationManager();
-    localNotificationManager.init(data);
+    // Allow null for testing purposes (assigning Mock Local Notification Manager)
+    final notificationManager = _localNotificationManager ?? LocalNotificationManager();
+    notificationManager.init(data);
     
-    return localNotificationManager;
+    return notificationManager;
   }
 
   // Adding new Reminder
@@ -95,10 +96,9 @@ class ReminderDataState extends ChangeNotifier {
       // Only call nextAvailableID if no error is thrown
       newReminder = newReminder.setID(_idManager.nextAvailableID('reminders'));
       _reminderData![reminderGroup]!.add(newReminder);
-      print(await reminderData);
 
       // Create notification
-      _localNotificationManager.addNotifications(newReminder);
+      _localNotificationManager!.addNotifications(newReminder);
 
       // Add to database
      dataLayer.newEntryToDB('reminders', newReminder.toMap());
@@ -141,7 +141,7 @@ class ReminderDataState extends ChangeNotifier {
         _reminderData![reminderGroup]![reminderIndex] = updatedReminder;
 
         // Update notification
-        _localNotificationManager.updateNotifications(updatedReminder);
+        _localNotificationManager!.updateNotifications(updatedReminder);
 
         // Update database
         dataLayer.updateEntryToDB('reminders', updatedReminder.toMap());
@@ -220,7 +220,7 @@ class ReminderDataState extends ChangeNotifier {
         _idManager.removeID('reminders', deletedReminder.id!); // Only remove ID if Reminder was removed
 
         // Create notification
-        _localNotificationManager.cancelNotifications(deletedReminder);
+        _localNotificationManager!.cancelNotifications(deletedReminder);
 
         // Delete from database
         dataLayer.deleteFromDB('reminders', deletedReminder.toMap());
@@ -242,6 +242,11 @@ class ReminderDataState extends ChangeNotifier {
     if(isInGroup != null) {
       _idManager.removeID('reminder_groups', deletedReminderGroup.id!);
 
+      // Delete the Reminders in the Reminder Group from database
+      isInGroup.forEach((reminder) {
+        dataLayer.deleteFromDB('reminders', reminder.toMap());
+      });
+
       // Delete from database
       dataLayer.deleteFromDB('reminder_groups', deletedReminderGroup.toMap());
 
@@ -249,5 +254,11 @@ class ReminderDataState extends ChangeNotifier {
     } else {
       print('Reminder Group does not exist. Reminder Group not deleted.');
     }
+  }
+
+  // Allow manual initialising of Local Notification Manager (for testing purposes ONLY)
+  Future<void> setLocalNotificationManager(LocalNotificationManager manager) async {
+    _localNotificationManager = manager;
+    _localNotificationManager!.init(await reminderData);
   }
 }

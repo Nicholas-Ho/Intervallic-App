@@ -14,27 +14,30 @@ class NewReminderFormDialog extends StatelessWidget {
     final List<FormButtonData> buttonList = [
       FormButtonData(text: 'OK', callback: submitButtonCallback, buttonColour: Color(0xff99FF99), textColour: Colors.black),
     ];
-    return AlertDialog(
+    return SimpleDialog(
       title: Text('New Reminder'),
-      content: SingleChildScrollView(
-        child: ReminderForm(
-          buttonList: buttonList,
-        ),
+      contentPadding: EdgeInsets.fromLTRB(24.0, 20.0, 24.0, 12.0),
+      children: [
+        SingleChildScrollView(
+          child: ReminderForm(
+            buttonList: buttonList,
+          ),
         )
+      ]
     );
   }
 
-  void submitButtonCallback(context, reminderNameController, reminderGroupID, intervalTextController, intervalType, startDate) {
-    Provider.of<ReminderDataState>(context, listen: false).newReminder(
-      Reminder(
-        id: 0,
-        name: reminderNameController.text,
-        reminderGroupID: reminderGroupID,
-        intervalValue: int.parse(intervalTextController.text),
-        intervalType: intervalType,
-        nextDate: startDate,
-      )
+  void submitButtonCallback(context, reminderNameController, reminderGroupID, intervalTextController, intervalType, descriptionController) {
+    final reminder = Reminder(
+      id: 0,
+      name: reminderNameController.text,
+      reminderGroupID: reminderGroupID,
+      intervalValue: int.parse(intervalTextController.text),
+      intervalType: intervalType,
+      nextDate: DateTime.now(), // To calculate new nextDate from now
+      description: descriptionController.text,
     );
+    Provider.of<ReminderDataState>(context, listen: false).newReminder(reminder.getNewNextDate());
     ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Reminder Added!')));
   }
 }

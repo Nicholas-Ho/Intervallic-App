@@ -1,12 +1,13 @@
-import 'package:flutter/widgets.dart';
 import 'package:flutter/material.dart';
 
 import 'package:provider/provider.dart';
 
-import './tiles.dart';
+import 'tiles.dart';
 import 'reminder_animated_list.dart';
 import 'package:intervallic_app/utils/domain_layer/reminder_data_state.dart';
 import 'package:intervallic_app/models/models.dart';
+import 'shimmer_loading_list.dart';
+import 'empty_reminder_list_placeholder.dart';
 
 // The to-do list
 class ReminderList extends StatelessWidget {
@@ -19,13 +20,21 @@ class ReminderList extends StatelessWidget {
               future: reminderDataState.reminderData,
               builder: (context, AsyncSnapshot<Map<ReminderGroup?, List<Reminder>>?> snapshot) {
                 if (snapshot.hasData) {
-                  return ListView(
-                    physics: BouncingScrollPhysics(),
-                    children: generateContainers(snapshot.data!),
-                    padding: const EdgeInsets.all(10),
-                  );
+                  // If snapshot.hasData returns true, reminderData has been fetched
+                  if (snapshot.data!.isNotEmpty) {
+                    // If reminderData is not empty, display the list
+                    return ListView(
+                      physics: BouncingScrollPhysics(),
+                      children: generateContainers(snapshot.data!),
+                      padding: const EdgeInsets.all(10),
+                    );
+                  } else {
+                    // If reminderData is empty, display the empty list placeholder
+                    return EmptyReminderListPlaceholder();
+                  }
                 } else {
-                  return Center(child: CircularProgressIndicator());
+                  // If snapshot.hasData returns false, reminderData has not been fetched
+                  return ShimmerLoadingList();
                 }
               });
     });

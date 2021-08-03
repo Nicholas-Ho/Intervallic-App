@@ -42,10 +42,10 @@ class IntervallicScaffold extends StatelessWidget {
     return Scaffold(
       backgroundColor: Theme.of(context).primaryColor,
       appBar: AppBar(
-        backgroundColor: Theme.of(context).primaryColorLight,
-        foregroundColor: Colors.black,
+        backgroundColor: Theme.of(context).primaryColor,
+        elevation: 0,
         centerTitle: true,
-        title: Text("Intervallic"),
+        title: Text("Intervallic", style: TextStyle(fontSize: 30, fontWeight: FontWeight.w700, color: Colors.white)),
       ),
       body: ReminderList(), // The to-do list
       floatingActionButton: FloatingActionButton(

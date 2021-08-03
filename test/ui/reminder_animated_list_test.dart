@@ -55,8 +55,8 @@ void main () {
   testWidgets('Test for Reminder List generation', (WidgetTester tester) async {
     // Set-up
     await tester.pumpWidget(
-      ChangeNotifierProvider<ReminderDataState?>.value(
-        value: mockReminderDataState, // Provider of Mock Reminder Data State
+      ChangeNotifierProvider<ReminderDataState>.value(
+        value: mockReminderDataState!, // Provider of Mock Reminder Data State
         builder: (context, _) {
           return MaterialApp(
             home: Scaffold(

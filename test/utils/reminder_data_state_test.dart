@@ -4,6 +4,7 @@ import 'package:mockito/mockito.dart';
 import 'package:intervallic_app/utils/domain_layer/reminder_data_state.dart';
 import 'package:intervallic_app/utils/data_layer/db_helper.dart';
 import 'package:intervallic_app/models/models.dart';
+import 'package:intervallic_app/utils/domain_layer/local_notification_manager.dart';
 
 void main() {
   Map<String, List<Map<String, dynamic>>> testData = { // Initial mock database for all tests
@@ -126,6 +127,7 @@ void main() {
 
       reminderDataState = ReminderDataState();
       reminderDataState.dataLayer = mockDBHelper;
+      reminderDataState.setLocalNotificationManager(MockLocalNotificationManager());
 
       // Setting up initial expected result
       ReminderGroup dailyReminders = ReminderGroup(id: 1, name: "Daily Reminders");
@@ -309,6 +311,7 @@ void main() {
 
       reminderDataState = ReminderDataState();
       reminderDataState.dataLayer = mockDBHelper;
+      reminderDataState.setLocalNotificationManager(MockLocalNotificationManager());
 
       // Setting up initial expected result
       ReminderGroup dailyReminders = ReminderGroup(id: 1, name: "Daily Reminders");
@@ -473,5 +476,27 @@ class MockDBHelper extends Mock implements DBHelper {
   deleteFromDB(String databaseName, Map<String, dynamic> entry) async {
     print('Entry "${entry['name']}" (id: ${entry['id']}) deleted from database "$databaseName"!');
     return entry['id'];
+  }
+}
+
+class MockLocalNotificationManager extends Mock implements LocalNotificationManager {
+  @override
+  Future<void> init(Map<ReminderGroup, List<Reminder>> data, {bool resolveUpdates = true}) async {
+    // Do nothing
+  }
+
+  @override
+  Future<void> addNotifications(Reminder reminder) async {
+    print('Notifications added for ${reminder.name}!');
+  }
+
+  @override
+  Future<void> updateNotifications(Reminder reminder) async {
+    print('Notifications updated for ${reminder.name}!');
+  }
+
+  @override
+  Future<void> cancelNotifications(Reminder reminder) async {
+    print('Notifications cancelled for ${reminder.name}!');
   }
 }

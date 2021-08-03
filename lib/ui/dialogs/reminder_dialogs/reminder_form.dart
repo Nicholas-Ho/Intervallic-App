@@ -1,6 +1,5 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 
 import 'package:provider/provider.dart';
 
@@ -10,17 +9,17 @@ import 'package:intervallic_app/utils/domain_layer/reminder_data_state.dart';
 class ReminderForm extends StatefulWidget {
   final String? initialReminderName;
   final int? initialReminderGroupID;
-  final String? initialIntervalText;
+  final int? initialIntervalValue;
   final IntervalType? initialIntervalType;
-  final DateTime? initialDate;
+  final String? initialDescription;
   final List<FormButtonData> buttonList; // Empty list by default
 
   const ReminderForm({ Key? key,
     this.initialReminderName,
     this.initialReminderGroupID,
-    this.initialIntervalText,
+    this.initialIntervalValue,
     this.initialIntervalType,
-    this.initialDate,
+    this.initialDescription,
     this.buttonList = const []
   }) : super(key: key);
 
@@ -50,12 +49,8 @@ class _ReminderFormState extends State<ReminderForm> {
 
   IntervalType _intervalDropdownValue = IntervalType.weeks; // Default value of 'Weeks'
 
-  
-  // Start Date Date Picker
-  DateTime startDate = DateTime.now(); // Default to DateTime.now()
-  final firstDate = DateTime.now();
-  final lastDate = DateTime.now().add(const Duration(days: 730));
-  TextEditingController _datePickerController = TextEditingController(); // For display purposes only
+  // Description Text Field
+  TextEditingController _descriptionController = TextEditingController();
 
   @override
   void initState() {
@@ -72,21 +67,14 @@ class _ReminderFormState extends State<ReminderForm> {
           nameTextField(_reminderNameController),
           reminderGroupDropdown(),
           intervalSelector(_intervalTextController),
-          startDatePicker(_datePickerController),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              for(int i = 0; i < widget.buttonList.length; i++)
-                Flexible(
-                  child: submitFormButton(
-                    _reminderNameController,
-                    _reminderGroupDropdownValue,
-                    _intervalTextController,
-                    _intervalDropdownValue,
-                    startDate,
-                    widget.buttonList[i])
-                )
-            ]
+          descriptionTextField(_descriptionController),
+          actionButtons(
+            _reminderNameController,
+            _reminderGroupDropdownValue,
+            _intervalTextController,
+            _intervalDropdownValue,
+            _descriptionController,
+            widget.buttonList
           )
         ],
       ),
@@ -100,14 +88,15 @@ class _ReminderFormState extends State<ReminderForm> {
 
     _reminderGroupDropdownValue = widget.initialReminderGroupID;
 
-    if(widget.initialIntervalText != null) {
-      _intervalTextController.text = widget.initialIntervalText!;
+    if(widget.initialIntervalValue != null) {
+      _intervalTextController.text = widget.initialIntervalValue!.toString();
     }
 
     _intervalDropdownValue = widget.initialIntervalType ?? IntervalType.weeks; // Default value of 'Weeks'
 
-    startDate = widget.initialDate ?? DateTime.now(); // Default value of DateTime.now()
-    _datePickerController.text = DateFormat('dd/MM/yyyy').format(startDate); // Display initial date
+    if(widget.initialDescription != null) {
+      _descriptionController.text = widget.initialDescription!;
+    }
   }
 
   Widget nameTextField(TextEditingController controller) {
@@ -227,11 +216,10 @@ class _ReminderFormState extends State<ReminderForm> {
                 elevation: 16,
                 style: TextStyle(color: Theme.of(context).buttonColor),
               items: _intervalDropdownList.map<DropdownMenuItem<IntervalType>>((element) {
-                print(describeEnum(element));
                 return DropdownMenuItem(
-                  key: Key(describeEnum(element)), // For testing
+                  key: Key(element.capitalizedSimpleString()), // For testing
                   value: element,
-                  child: Text(element.capitalize(), style: TextStyle(color: Colors.black),)
+                  child: Text(element.capitalizedSimpleString(), style: TextStyle(color: Colors.black),)
                 );
               }).toList(),
               onChanged: (dynamic value) {
@@ -258,58 +246,74 @@ class _ReminderFormState extends State<ReminderForm> {
     );
   }
 
-  Widget startDatePicker(TextEditingController controller) {
+  Widget descriptionTextField(TextEditingController controller) {
     return Padding(
       padding: EdgeInsets.all(5.0),
       child: TextFormField(
-        key: Key('Date Picker Text Field'), // For testing
+        key: Key('Description Text Field'), // For testing
         controller: controller,
-        onTap: () async {
-          FocusScope.of(context).requestFocus(new FocusNode()); // Stops keyboard from appearing
-
-          // Show Date Picker
-          final DateTime? picked = await showDatePicker(
-            context: context,
-            initialDate: startDate,
-            firstDate: firstDate,
-            lastDate: lastDate,
-          );
-
-          if(picked != null && picked != startDate) {
-            setState(() {
-              startDate = picked;
-              });
-          }
-
-          controller.text = DateFormat('dd/MM/yyyy').format(startDate); // Update Text Field
-        },
+        keyboardType: TextInputType.multiline,
+        minLines: 4,
+        maxLines: 4,
         decoration: InputDecoration(
           border: OutlineInputBorder(),
-          labelText: 'Start Date',
+          labelText: 'Description',
+          alignLabelWithHint: true,
           isDense: true,
           contentPadding: EdgeInsets.fromLTRB(hDefaultContentPadding, vContentPaddingText, hDefaultContentPadding, vContentPaddingText),
           ),
+        validator: (String? value) {
+          if(value!.length >= 250) {
+            return 'Too long.';
+          } else {
+            return null;
+          }
+        }
       )
     );
   }
 
-  Widget submitFormButton(TextEditingController reminderNameController, int? reminderGroupID, TextEditingController intervalTextController, IntervalType? intervalType, DateTime startDate, FormButtonData buttonData) {
-    return Padding(
-      padding: EdgeInsets.all(0.0),
-      child: TextButton(
-        child: Text(buttonData.text), // Button text from FormButtonData
-        style: ElevatedButton.styleFrom(
-          elevation: 0.0,
-          primary: buttonData.buttonColour,
-          onPrimary: buttonData.textColour,
-        ),
-        onPressed: () {
-          if(_formKey.currentState!.validate()) {
-            buttonData.callback!(context, reminderNameController, reminderGroupID, intervalTextController, intervalType, startDate); // Callback from FormButtonData
-            Navigator.pop(context);
-          }
-        },
-      )
+  Widget actionButtons(TextEditingController reminderNameController, int? reminderGroupID, TextEditingController intervalTextController, IntervalType? intervalType, TextEditingController descriptionController, List<FormButtonData> buttonList) {
+    final List<Widget> children = [];
+
+    for(int i = 0; i < (buttonList.length * 2 - 1); i++) {
+      if(i % 2 == 0) { // Button
+        final buttonData = buttonList[i~/2];
+
+        children.add(
+          Flexible(
+            child: Padding(
+              padding: EdgeInsets.all(0.0),
+              child: TextButton(
+                child: Text(buttonData.text), // Button text from FormButtonData
+                style: ElevatedButton.styleFrom(
+                  elevation: 0.0,
+                  primary: buttonData.buttonColour,
+                  onPrimary: buttonData.textColour,
+                ),
+                onPressed: () {
+                  if(buttonData.requiresValidation == true) {
+                    if(_formKey.currentState!.validate()) {
+                      Navigator.pop(context);
+                      buttonData.callback!(context, reminderNameController, reminderGroupID, intervalTextController, intervalType, descriptionController); // Callback from FormButtonData
+                    }
+                  } else {
+                    Navigator.pop(context);
+                    buttonData.callback!(context, reminderNameController, reminderGroupID, intervalTextController, intervalType, descriptionController); // Callback from FormButtonData
+                  }
+                },
+              )
+            )
+          )
+        );
+      } else { // Divider SizedBox
+        children.add(SizedBox(width: 10));
+      }
+    }
+    
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: children
     );
   }
 }
@@ -317,8 +321,9 @@ class _ReminderFormState extends State<ReminderForm> {
 class FormButtonData {
   final String text;
   final Function? callback;
+  final bool requiresValidation;
   final Color buttonColour;
   final Color textColour;
 
-  FormButtonData({this.text = 'OK', this.callback, this.buttonColour = const Color(0xff99FF99), this.textColour = Colors.black});
+  FormButtonData({this.text = 'OK', this.callback, this.requiresValidation = true, this.buttonColour = const Color(0xff99FF99), this.textColour = Colors.black});
 }

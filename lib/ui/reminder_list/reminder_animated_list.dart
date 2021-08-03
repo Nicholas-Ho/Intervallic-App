@@ -141,6 +141,7 @@ class _ReminderAnimatedListState extends State<ReminderAnimatedList> {
             _removeReminder(reminder, index: index, animate: false);
             _addReminder(updatedReminder);
           });
+          ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Reminder Completed! Reseting date.')));
         },
       )
     );

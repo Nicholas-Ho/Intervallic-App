@@ -41,7 +41,7 @@ void main () {
     // Check if New Reminder Group Form is open
     final titleFinder = find.text('New Reminder Group');
     final nameTextFieldFinder = find.text('Name');
-    final submitButtonFinder = find.text('Add');
+    final submitButtonFinder = find.text('OK');
 
     expect(titleFinder, findsOneWidget);
     expect(nameTextFieldFinder, findsOneWidget);
@@ -85,7 +85,7 @@ void main () {
       final intervalSelectorDropdownFinder = find.text('Weeks');
       final startDatePickerFinder = find.text(DateFormat('dd/MM/yyyy').format(DateTime.now())); // No error message as the field defaults to Datetime.now()
       final startDatePickerTextFinder = find.text('Start Date');
-      final submitButtonFinder = find.text('Add');
+      final submitButtonFinder = find.text('OK');
 
       expect(nameTextFieldFinder, findsOneWidget);
       expect(reminderGroupDropdownFinder, findsOneWidget);

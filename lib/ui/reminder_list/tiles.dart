@@ -9,22 +9,26 @@ import 'package:intervallic_app/ui/dialogs/reminder_group_dialogs/reminder_group
 class ReminderGroupTile extends StatelessWidget {
   final ReminderGroup? reminderGroup;
 
+  static const double _cardPadding = 10;
+  static const double _verticalPadding = 3;
+  static const double _cardHeight = 60;
+  static const double height = _cardHeight + _cardPadding + _verticalPadding; // Necessary for the stack
+
   ReminderGroupTile({this.reminderGroup});
 
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 3),
+      padding: const EdgeInsets.symmetric(vertical: _verticalPadding),
       child: SizedBox(
-        height: 60,
-        width: 370,
+        height: _cardHeight,
         child: GestureDetector(
           onLongPress: () {
             showDialog(
               context: context,
               barrierDismissible: true,
               builder: (BuildContext context) {
-                return ReminderGroupDetailsDialog();
+                return ReminderGroupDetailsDialog(reminderGroup: reminderGroup);
               }
             );
           },
@@ -34,7 +38,7 @@ class ReminderGroupTile extends StatelessWidget {
               borderRadius: BorderRadius.circular(10.0),
             ),
             child: Padding(
-              padding: const EdgeInsets.all(10),
+              padding: const EdgeInsets.all(_cardPadding),
               child: Align(
                 alignment: Alignment.centerLeft,
                 child: Text(reminderGroup!.name!, style: TextStyle(fontSize: 20)),
@@ -58,14 +62,13 @@ class ReminderTile extends StatelessWidget {
       padding: const EdgeInsets.symmetric(vertical: 1, horizontal: 10),
       child: SizedBox(
         height: 60,
-        width: 370,
         child: GestureDetector(
           onLongPress: () {
             showDialog(
               context: context,
               barrierDismissible: true,
               builder: (BuildContext context) {
-                return ReminderDetailsDialog();
+                return ReminderDetailsDialog(reminder: reminder);
               }
             );
           },

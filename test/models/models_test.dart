@@ -89,7 +89,7 @@ void main() {
       DateTime now = DateTime.fromMillisecondsSinceEpoch(100);
 
       // Run function
-      reminder = reminder.getNewNextDate(now);
+      reminder = reminder.getNewNextDate();
 
       // Check result
       DateTime expectedDateTime = DateTime(now.year, now.month, now.day + 7, 8); // 7 days after the epoch, at 8am

@@ -29,10 +29,10 @@ void main () {
     testWidgets('Test for emtpy form layout', (WidgetTester tester) async {
       // Set-up
       await tester.pumpWidget(
-        ChangeNotifierProvider<ReminderDataState?>.value(
-          value: mockReminderDataState, // Provider of Mock Reminder Data State
+        ChangeNotifierProvider<ReminderDataState>.value(
+          value: mockReminderDataState!, // Provider of Mock Reminder Data State
           builder: (context, _) {
-          return _wrapDialogWithMaterialApp(NewReminderFormDialog());
+            return _wrapDialogWithMaterialApp(NewReminderFormDialog());
           }
         )
       );
@@ -47,7 +47,7 @@ void main () {
       final intervalSelectorDropdownFinder = find.text('Weeks');
       final startDatePickerFinder = find.text(DateFormat('dd/MM/yyyy').format(DateTime.now())); // No error message as the field defaults to Datetime.now()
       final startDatePickerTextFinder = find.text('Start Date');
-      final submitButtonFinder = find.text('Add');
+      final submitButtonFinder = find.text('OK');
 
       expect(nameTextFieldFinder, findsOneWidget);
       expect(reminderGroupDropdownFinder, findsOneWidget);
@@ -61,8 +61,8 @@ void main () {
     testWidgets('Test for submitting empty form', (WidgetTester tester) async {
       // Set-up
       await tester.pumpWidget(
-        ChangeNotifierProvider<ReminderDataState?>.value(
-          value: mockReminderDataState, // Provider of Mock Reminder Data State
+        ChangeNotifierProvider<ReminderDataState>.value(
+          value: mockReminderDataState!, // Provider of Mock Reminder Data State
           builder: (context, _) {
             return _wrapDialogWithMaterialApp(NewReminderFormDialog());
           }
@@ -71,7 +71,7 @@ void main () {
 
       await tester.tap(find.text('X'));
       await tester.pumpAndSettle();
-      await tester.tap(find.text('Add'));
+      await tester.tap(find.text('OK'));
       await tester.pumpAndSettle();
 
       // Check errors thrown
@@ -89,8 +89,8 @@ void main () {
     testWidgets('Test for successful form submission (no date picker test)', (WidgetTester tester) async {
       // Set-up
       await tester.pumpWidget(
-        ChangeNotifierProvider<ReminderDataState?>.value(
-          value: mockReminderDataState, // Provider of Mock Reminder Data State
+        ChangeNotifierProvider<ReminderDataState>.value(
+          value: mockReminderDataState!, // Provider of Mock Reminder Data State
           builder: (context, _) {
             return _wrapDialogWithMaterialApp(NewReminderFormDialog());
           }
@@ -126,7 +126,7 @@ void main () {
       await tester.pumpAndSettle();
 
       // Submit form
-      await tester.tap(find.text('Add'));
+      await tester.tap(find.text('OK'));
       await tester.pump(Duration(seconds: 2));
 
       expect(find.text('Reminder Added!'), findsOneWidget);
@@ -147,8 +147,8 @@ void main () {
 
     // Set-up
     await tester.pumpWidget(
-      ChangeNotifierProvider<ReminderDataState?>.value(
-        value: mockReminderDataState, // Provider of Mock Reminder Data State
+      ChangeNotifierProvider<ReminderDataState>.value(
+        value: mockReminderDataState!, // Provider of Mock Reminder Data State
         builder: (context, _) {
           return _wrapDialogWithMaterialApp(NewReminderFormDialog());
         }
@@ -199,7 +199,7 @@ void main () {
     // print(startDatePickerTextField.controller.text);
   });
 
-  group('Tests for New Reminder Form Dialog (no date picker tests).', () {
+  group('Tests for New Reminder Form Dialog (date picker tests).', () {
     testWidgets('Test for successful form submission (with date picker test)', (WidgetTester tester) async {
       final now = DateTime.now();
       final yearFromNow = DateTime(now.year + 1, now.month, now.day);
@@ -209,8 +209,8 @@ void main () {
       print(testDateString);
       // Set-up
       await tester.pumpWidget(
-        ChangeNotifierProvider<ReminderDataState?>.value(
-          value: mockReminderDataState, // Provider of Mock Reminder Data State
+        ChangeNotifierProvider<ReminderDataState>.value(
+          value: mockReminderDataState!, // Provider of Mock Reminder Data State
           builder: (context, _) {
             return _wrapDialogWithMaterialApp(NewReminderFormDialog());
           }
@@ -261,7 +261,7 @@ void main () {
       await tester.pumpAndSettle();
 
       // Submit form
-      await tester.tap(find.text('Add'));
+      await tester.tap(find.text('OK'));
       await tester.pump(Duration(seconds: 2));
 
       expect(find.text('Reminder Added!'), findsOneWidget);

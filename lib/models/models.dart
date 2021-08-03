@@ -9,7 +9,7 @@ extension StringMethods on IntervalType {
     return this.toString().split('.').last;
   }
 
-  String capitalize() {
+  String capitalizedSimpleString() {
     String simpleString = this.toSimpleString();
     return "${simpleString[0].toUpperCase()}${simpleString.substring(1)}";
   }
@@ -37,8 +37,9 @@ IntervalType intervalTypeFromString(String string) {
 class ReminderGroup extends Equatable {
   final int? id;
   final String? name;
+  final String? description;
 
-  ReminderGroup({this.id, this.name}); // Constructor
+  ReminderGroup({this.id, this.name, this.description}); // Constructor
 
   @override
   List<Object?> get props => [id, name]; // Required for Equatable
@@ -53,6 +54,7 @@ class ReminderGroup extends Equatable {
     return {
       'id': id,
       'name': name,
+      'description': description
     };
   }
 
@@ -60,6 +62,7 @@ class ReminderGroup extends Equatable {
     return ReminderGroup(
         id: map['id'],
         name: map['name'],
+        description: map['description']
       );
   }
 }
@@ -99,8 +102,8 @@ class Reminder extends Equatable {
     return Reminder.fromMap(map);
   }
 
-  Reminder getNewNextDate([DateTime? dateTime]) {
-    dateTime = dateTime ?? DateTime.now();
+  Reminder getNewNextDate() {
+    final DateTime dateTime = this.nextDate ?? DateTime.now();
 
     // Calculate new Next Date
     // Set to 8am on Next Date

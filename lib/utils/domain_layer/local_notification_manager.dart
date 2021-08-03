@@ -135,7 +135,7 @@ class LocalNotificationManager {
   // Public-facing, general function for cancelling notifications
   Future<void> updateNotifications(Reminder reminder) async {
     String reminderType = 'intervallic';
-    final originalReminder = _intervallicReminders.firstWhere((element) => element.id == reminder.id,
+    _intervallicReminders.firstWhere((element) => element.id == reminder.id,
         orElse: () {
           final originalReminder = _dailyReminders.firstWhere((element) => element.id == reminder.id,
               orElse: () {
@@ -153,6 +153,8 @@ class LocalNotificationManager {
     } else if(reminderType == 'intervallic') {
       // If the interval is more than 1 day, use the intervallic notification function
       await _updateIntervallicNotifications(reminder);
+    } else {
+      print('Reminder not found. Notifications not updated.');
     }
   }
 

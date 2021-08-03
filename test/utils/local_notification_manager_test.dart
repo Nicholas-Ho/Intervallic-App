@@ -16,7 +16,7 @@ void main() {
 
     setUp(() {
       localNotificationManager = LocalNotificationManager();
-      localNotificationManager!.localNotificationService = MockLocalNotificationPlugin();
+      localNotificationManager!.localNotificationService = MockLocalNotificationService();
 
       // Setting up Reminder Data
       ReminderGroup dailyReminders = ReminderGroup(id: 1, name: "Daily Reminders");
@@ -262,7 +262,7 @@ void main() {
   test('Test init, part 2 - resolving discrepancies', () async {
     // Set-up
     LocalNotificationManager localNotificationManager = LocalNotificationManager();
-    localNotificationManager.localNotificationService = MockLocalNotificationPlugin();
+    localNotificationManager.localNotificationService = MockLocalNotificationService();
     final now = DateTime.now();
 
     // Setting up Reminder Data
@@ -358,7 +358,7 @@ void main() {
 
     setUp(() async {
       localNotificationManager = LocalNotificationManager();
-      localNotificationManager!.localNotificationService = MockLocalNotificationPlugin();
+      localNotificationManager!.localNotificationService = MockLocalNotificationService();
 
       // One Reminder that is far into the future, one that is past (so no notifications), the rest are dummy to fill space
       lateReminder = Reminder(
@@ -603,7 +603,7 @@ void main() {
 
     setUp(() {
       localNotificationManager = LocalNotificationManager();
-      localNotificationManager!.localNotificationService = MockLocalNotificationPlugin();
+      localNotificationManager!.localNotificationService = MockLocalNotificationService();
 
       // Setting up Reminder Data
       ReminderGroup dailyReminders = ReminderGroup(id: 1, name: "Daily Reminders");
@@ -871,7 +871,7 @@ bool findByID(List<dynamic> list, int id, {String? foundMessage, String? notFoun
 }
 
 // Mock Notification Plugin
-class MockLocalNotificationPlugin extends Mock implements LocalNotificationService {
+class MockLocalNotificationService extends Mock implements LocalNotificationService {
   List<PendingNotificationRequest> requestList = [];
 
   @override

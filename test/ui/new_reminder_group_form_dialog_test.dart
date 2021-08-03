@@ -29,7 +29,7 @@ void main () {
     // Check empty form layout
     final titleFinder = find.text('New Reminder Group');
     final nameTextFieldFinder = find.text('Name');
-    final submitButtonFinder = find.text('Add');
+    final submitButtonFinder = find.text('OK');
 
     expect(titleFinder, findsOneWidget);
     expect(nameTextFieldFinder, findsOneWidget);
@@ -49,7 +49,7 @@ void main () {
 
     await tester.tap(find.text('X'));
     await tester.pumpAndSettle();
-    await tester.tap(find.text('Add'));
+    await tester.tap(find.text('OK'));
     await tester.pumpAndSettle();
 
     // Check errors thrown
@@ -79,7 +79,7 @@ void main () {
     await tester.enterText(nameTextFieldFinder, 'Habit Forming');
 
     // Submit form
-    await tester.tap(find.text('Add'));
+    await tester.tap(find.text('OK'));
     await tester.pump(Duration(seconds: 2));
 
     expect(find.text('Reminder Group Created!'), findsOneWidget);

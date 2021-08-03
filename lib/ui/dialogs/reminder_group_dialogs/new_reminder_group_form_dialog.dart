@@ -15,7 +15,7 @@ class NewReminderGroupFormDialog extends StatelessWidget {
       FormButtonData(text: 'OK', callback: submitButtonCallback, buttonColour: Color(0xff99FF99), textColour: Colors.black),
     ];
     return AlertDialog(
-      title: Text('New Reminder Group'),
+      title: Text('New Group'),
       content: SingleChildScrollView(
         child: ReminderGroupForm(
           buttonList: buttonList,
@@ -24,11 +24,12 @@ class NewReminderGroupFormDialog extends StatelessWidget {
     );
   }
 
-  void submitButtonCallback(context, reminderGroupNameController) {
+  void submitButtonCallback(context, reminderGroupNameController, descriptionController) {
     Provider.of<ReminderDataState>(context, listen: false).newReminderGroup(
       ReminderGroup(
         id: 0,
         name: reminderGroupNameController.text,
+        description: descriptionController.text,
       )
     );
     ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Reminder Group Created!')));

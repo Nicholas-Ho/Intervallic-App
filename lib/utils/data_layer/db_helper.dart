@@ -33,7 +33,8 @@ class DBHelper {
           CREATE TABLE reminder_groups
           (
             id INTEGER PRIMARY KEY,
-            name TEXT NOT NULL
+            name TEXT NOT NULL,
+            description TEXT
           );
         ''');
         await db.execute('''
@@ -95,7 +96,7 @@ class DBHelper {
       databaseName,
       entry,
       where: 'id = ?',
-      whereArgs:[ entry['id']]);
+      whereArgs:[entry['id']]);
 
     return id;
   }
@@ -107,7 +108,7 @@ class DBHelper {
     var id = await db!.delete(
       databaseName,
       where: 'id = ?',
-      whereArgs: entry['id']);
+      whereArgs: [entry['id']]);
 
     return id;
   }
