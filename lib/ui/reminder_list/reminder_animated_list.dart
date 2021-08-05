@@ -6,12 +6,15 @@ import 'package:provider/provider.dart';
 import './tiles.dart';
 import 'package:intervallic_app/utils/domain_layer/reminder_data_state.dart';
 import 'package:intervallic_app/models/models.dart';
+import 'package:intervallic_app/utils/ui_layer/ui_reminder_group_manager.dart';
 
 // Contains Reminders in the Reminder Group
 class ReminderAnimatedList extends StatefulWidget {
   final List<Reminder>? initialReminders;
+  final ReminderGroup? reminderGroup;
+  final UIReminderGroupManager? uiGroupManager;
   
-  ReminderAnimatedList({this.initialReminders});
+  ReminderAnimatedList({this.initialReminders, this.reminderGroup, this.uiGroupManager});
 
   @override
   _ReminderAnimatedListState createState() => _ReminderAnimatedListState();
@@ -21,18 +24,57 @@ class _ReminderAnimatedListState extends State<ReminderAnimatedList> {
   List<Reminder> _reminders = [];
   GlobalKey<AnimatedListState> listKey = GlobalKey<AnimatedListState>();
   final int addAnimationDuration = 700; // In milliseconds
+  final int removeAnimationDuration = 500; // In milliseconds
+  final int openAnimationDuration = 300; // In milliseconds
+
+  bool isOpen = false; // Whether the List is displaying anything (kind of like a folder)
 
   @override
   void initState() {
     super.initState();
     _initReminders();
+    WidgetsBinding.instance!.addPostFrameCallback((timeStamp) async { _checkOpen(); }) ;
   }
 
   @override
   void didUpdateWidget(ReminderAnimatedList oldWidget) {
     super.didUpdateWidget(oldWidget);
 
+    // Checking if this list is currently open
+    _checkOpen();
+
     // Update Animated List on NotifyListeners() call
+    if(isOpen == true) {
+      // If the List is already open, simply update it
+      _updateList();
+    } else {
+      // If the List is not open, wait for it to open on the next frame
+      // isOpen only get updated after the current frame
+      WidgetsBinding.instance!.addPostFrameCallback((timeStamp) { _updateList(); });
+    }
+  }
+
+  void _initReminders() {
+    // Add all initial Reminders to the list (sorted by NextDate)
+    for(int i = 0; i < widget.initialReminders!.length; i++) {
+      Reminder reminder = widget.initialReminders![i];
+      _addReminder(reminder, editState: false); // The AnimatedList automatically initialises its state to initialItemCount
+    }
+  }
+
+  void _checkOpen() {
+    final UIReminderGroupManager manager = widget.uiGroupManager!;
+    final bool shouldBeOpen = manager.checkOpenGroup(widget.reminderGroup!);
+
+    // Open or close list
+    if(isOpen == false && shouldBeOpen == true) {
+      _openList();
+    } else if(isOpen == true && shouldBeOpen == false) {
+      _closeList();
+    }
+  }
+
+  void _updateList() {
     if(widget.initialReminders!.length > _reminders.length) {
       // If Reminder is added
       int difference = widget.initialReminders!.length - _reminders.length;
@@ -63,14 +105,6 @@ class _ReminderAnimatedListState extends State<ReminderAnimatedList> {
           });
         if(difference == 0) { break; }
       }
-    }
-  }
-
-  void _initReminders() {
-    // Add all initial Reminders to the list (sorted by NextDate)
-    for(int i = 0; i < widget.initialReminders!.length; i++) {
-      Reminder reminder = widget.initialReminders![i];
-      _addReminder(reminder, editState: false); // The AnimatedList automatically initialises its state to initialItemCount
     }
   }
 
@@ -110,8 +144,36 @@ class _ReminderAnimatedListState extends State<ReminderAnimatedList> {
       index = _reminders.indexOf(reminder);
     }
 
-    listKey.currentState!.removeItem(index, (context, animation) => Container());
+    listKey.currentState!.removeItem(index, (context, animation) => ScaleTransition(
+      scale: CurvedAnimation(parent: animation, curve: Curves.easeOutBack),
+      child: ReminderTile(reminder: reminder),
+    ), duration: Duration(milliseconds: removeAnimationDuration));
     _reminders.remove(reminder);
+  }
+
+  // Opens the Reminder Animated List like a folder
+  void _openList() {
+    if(isOpen == false) { // Only open the folder if it is closed
+      for(int i = 0; i < _reminders.length; i++) {
+        listKey.currentState!.insertItem(i, duration: Duration(milliseconds: openAnimationDuration));
+      }
+      // After the List has been built in the next frame (and all the items are added), set isOpen to true
+      WidgetsBinding.instance!.addPostFrameCallback((timeStamp) { isOpen = true; });
+    }
+  }
+
+  // Closes the Reminder Animated List like a folder
+  void _closeList() {
+    if(isOpen == true) { // Only close the folder if it is open
+      for(int i = 0; i < _reminders.length; i++) {
+        // _openListBuildItems animation is also used for closing
+        // Index of 0 is used as the in-place removal will remove the whole list
+        listKey.currentState!.removeItem(0, (context, animation) => _openListBuildItems(context, i, animation),
+            duration: Duration(milliseconds: openAnimationDuration));
+      }
+      // After the List has been built in the next frame (and all the items are removed), set isOpen to false
+      WidgetsBinding.instance!.addPostFrameCallback((timeStamp) { isOpen = false; });
+    }
   }
 
   @override
@@ -120,9 +182,13 @@ class _ReminderAnimatedListState extends State<ReminderAnimatedList> {
       key: listKey,
       shrinkWrap: true,
       physics: NeverScrollableScrollPhysics(),
-      initialItemCount: _reminders.length,
+      initialItemCount: 0,
       itemBuilder: (context, index, animation) {
-        return _buildItems(context, index, animation);
+        if(isOpen == true) {
+          return _buildItems(context, index, animation);
+        } else {
+          return _openListBuildItems(context, index, animation);
+        }
       });
   }
 
@@ -143,6 +209,42 @@ class _ReminderAnimatedListState extends State<ReminderAnimatedList> {
           });
           ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Reminder Completed! Reseting date.')));
         },
+      )
+    );
+  }
+
+  // Animation for opening the List
+  _openListBuildItems(context, index, animation) {
+    Widget dismissible(Reminder reminder) {
+      return Dismissible(
+        key: UniqueKey(),
+        child: ReminderTile(reminder: reminder),
+        onDismissed: (direction) {
+          final updatedReminder = reminder.getNewNextDate();
+          Provider.of<ReminderDataState>(context, listen: false).updateReminder(updatedReminder, rebuild: false);
+          // Remove and add manually
+          setState(() {
+            _removeReminder(reminder, index: index, animate: false);
+            _addReminder(updatedReminder);
+          });
+          ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Reminder Completed! Reseting date.')));
+        },
+      );
+    }
+    final reminder = _reminders[index];
+
+    final curve = Curves.easeOutBack;
+    
+    return SlideTransition(
+      position: Tween<Offset>(
+        begin: const Offset(0, -0.5),
+        end: Offset(0, 0),
+      ).animate(CurvedAnimation(
+          parent: animation,
+          curve: curve,)),
+      child:  SizeTransition(
+        sizeFactor: CurvedAnimation(parent: animation, curve: curve),
+        child: dismissible(reminder)
       )
     );
   }

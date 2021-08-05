@@ -1,28 +1,33 @@
-import 'package:flutter/widgets.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 import 'package:intervallic_app/models/models.dart';
 import 'package:intervallic_app/ui/dialogs/reminder_dialogs/reminder_details_dialog.dart';
 import 'package:intervallic_app/ui/dialogs/reminder_group_dialogs/reminder_group_details_dialog.dart';
+import 'package:intervallic_app/utils/ui_layer/ui_reminder_group_manager.dart';
 
 // Tile for Reminder Group
 class ReminderGroupTile extends StatelessWidget {
   final ReminderGroup? reminderGroup;
-
-  static const double _cardPadding = 10;
-  static const double _verticalPadding = 3;
-  static const double _cardHeight = 60;
-  static const double height = _cardHeight + _cardPadding + _verticalPadding; // Necessary for the stack
 
   ReminderGroupTile({this.reminderGroup});
 
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: _verticalPadding),
+      padding: const EdgeInsets.symmetric(vertical: 3),
       child: SizedBox(
-        height: _cardHeight,
+        height: 60,
         child: GestureDetector(
+          onTap: () {
+            final bool isAlreadyOpen = Provider.of<UIReminderGroupManager>(context, listen: false).checkOpenGroup(reminderGroup!);
+            // If the Reminder Group is closed, open it. If it is already open, close it.
+            if(isAlreadyOpen == false) {
+              Provider.of<UIReminderGroupManager>(context, listen: false).openGroup(reminderGroup!);
+            } else {
+              Provider.of<UIReminderGroupManager>(context, listen: false).closeAll();
+            }
+          },
           onLongPress: () {
             showDialog(
               context: context,
@@ -38,7 +43,7 @@ class ReminderGroupTile extends StatelessWidget {
               borderRadius: BorderRadius.circular(10.0),
             ),
             child: Padding(
-              padding: const EdgeInsets.all(_cardPadding),
+              padding: const EdgeInsets.all(10),
               child: Align(
                 alignment: Alignment.centerLeft,
                 child: Text(reminderGroup!.name!, style: TextStyle(fontSize: 20)),

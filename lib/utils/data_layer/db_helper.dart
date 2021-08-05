@@ -3,6 +3,9 @@ import 'dart:async';
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
 
+final String reminderGroupTable = 'reminder_groups';
+final String reminderTable = 'reminders';
+
 // Database Helper class for SQLite databse
 class DBHelper {
   DBHelper._(); // Private constructor

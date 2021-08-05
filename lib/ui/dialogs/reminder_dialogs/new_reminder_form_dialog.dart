@@ -5,6 +5,7 @@ import 'package:provider/provider.dart';
 import 'reminder_form.dart';
 import '../../../models/models.dart';
 import '../../../utils/domain_layer/reminder_data_state.dart';
+import '../../../utils/ui_layer/ui_reminder_group_manager.dart';
 
 class NewReminderFormDialog extends StatelessWidget {
   NewReminderFormDialog({ Key? key }) : super(key: key);
@@ -39,5 +40,8 @@ class NewReminderFormDialog extends StatelessWidget {
     );
     Provider.of<ReminderDataState>(context, listen: false).newReminder(reminder.getNewNextDate());
     ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Reminder Added!')));
+
+    // Open Reminder Group (in the UI)
+    Provider.of<UIReminderGroupManager>(context, listen: false).openGroupByID(reminderGroupID);
   }
 }

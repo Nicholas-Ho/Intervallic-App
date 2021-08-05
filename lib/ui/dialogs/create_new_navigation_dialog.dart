@@ -72,7 +72,7 @@ class CreateNewNavigationDialog extends StatelessWidget {
           elevation: 0.0,
           primary: enabled ? Theme.of(context).primaryColorDark : Theme.of(context).disabledColor,
         ),
-        onPressed: () => enabled ? buttonOnPressed : null,
+        onPressed: () => enabled ? buttonOnPressed() : null,
       );
     }
 

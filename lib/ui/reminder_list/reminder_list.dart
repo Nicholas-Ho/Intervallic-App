@@ -8,6 +8,7 @@ import 'package:intervallic_app/utils/domain_layer/reminder_data_state.dart';
 import 'package:intervallic_app/models/models.dart';
 import 'shimmer_loading_list.dart';
 import 'empty_reminder_list_placeholder.dart';
+import 'package:intervallic_app/utils/ui_layer/ui_reminder_group_manager.dart';
 
 // The to-do list
 class ReminderList extends StatelessWidget {
@@ -70,7 +71,15 @@ class ReminderGroupContainer extends StatelessWidget {
         mainAxisSize: MainAxisSize.max,
         children: [
           ReminderGroupTile(reminderGroup: reminderGroup),
-          ReminderAnimatedList(initialReminders: reminders),
+          Consumer<UIReminderGroupManager>( // Consumer for UI group management
+            builder: (context, manager, widget) {
+              return ReminderAnimatedList(
+                reminderGroup: reminderGroup,
+                initialReminders: reminders,
+                uiGroupManager: manager,
+              );
+            }
+          ),
       ]),
     );
   }

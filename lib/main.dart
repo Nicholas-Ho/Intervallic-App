@@ -6,6 +6,7 @@ import 'theme.dart';
 import 'utils/domain_layer/reminder_data_state.dart';
 import 'ui/reminder_list/reminder_list.dart';
 import 'ui/dialogs/create_new_navigation_dialog.dart';
+import 'utils/ui_layer/ui_reminder_group_manager.dart';
 
 import 'utils/setup_debug_app_state.dart';
 
@@ -16,11 +17,15 @@ void main() async {
   await clearNotifications(); // Clears all existing local notifications
 
   return runApp(
-    ChangeNotifierProvider(
-      // Change Notifier Provider for Reminder Data state management
-      create: (context) => ReminderDataState(),
+    MultiProvider(
+      providers: [
+        // Change Notifier Provider for Reminder Data state management
+        ChangeNotifierProvider(create: (context) => ReminderDataState()),
+        // Change Notificer Provider for UI group management
+        ChangeNotifierProvider(create: (context) => UIReminderGroupManager()),
+      ],
       child: IntervallicApp(),
-    ),
+    )
   );
 }
 

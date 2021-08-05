@@ -45,7 +45,7 @@ class ReminderDataState extends ChangeNotifier {
   // Query all Reminder Groups
   Future<List<ReminderGroup>> _getAllReminderGroups() async {
     final List<Map<String, dynamic>> maps =
-        await dataLayer.queryDatabase('reminder_groups');
+        await dataLayer.queryDatabase(reminderGroupTable);
 
     return List.generate(maps.length, (i) {
       return ReminderGroup.fromMap(maps[i]);
@@ -55,7 +55,7 @@ class ReminderDataState extends ChangeNotifier {
   // Query Reminders by Reminder Group ID
   Future<List<Reminder>> _getRemindersByGroup(int? group) async {
     final List<Map<String, dynamic>> maps = await dataLayer
-        .queryDatabase('reminders', whereColumn: 'reminder_group_id', whereArg: '$group');
+        .queryDatabase(reminderTable, whereColumn: 'reminder_group_id', whereArg: '$group');
 
     return List.generate(maps.length, (i) {
       return Reminder.fromMap(maps[i]);
@@ -75,7 +75,7 @@ class ReminderDataState extends ChangeNotifier {
       return keys;
     }
 
-    List<String> tables = ['reminders', 'reminder_groups'];
+    List<String> tables = [reminderTable, reminderGroupTable];
     return IdManager(await _getAllPrimaryKeys(tables));
   }
 
