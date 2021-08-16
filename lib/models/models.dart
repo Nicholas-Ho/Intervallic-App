@@ -1,4 +1,6 @@
-import 'package:equatable/equatable.dart';// Allows for identical object comparisons for testing purposes
+import 'package:equatable/equatable.dart'; // Allows for identical object comparisons for testing purposes
+
+import 'package:intervallic_app/utils/data_layer/settings_manager.dart';
 
 enum IntervalType { // Interval Type for Reminders
   days, weeks, months, years
@@ -102,23 +104,29 @@ class Reminder extends Equatable {
     return Reminder.fromMap(map);
   }
 
-  Reminder getNewNextDate() {
+  Future<Reminder> getNewNextDate() async {
     final DateTime dateTime = this.nextDate ?? DateTime.now();
+
+    final DateTime alertTime = await SettingsManager().settings.getAlertTime();
 
     // Calculate new Next Date
     // Set to 8am on Next Date
     late DateTime newDate;
     switch(this.intervalType) {
-      case IntervalType.days: { newDate = DateTime(dateTime.year, dateTime.month, dateTime.day + this.intervalValue!, 8); }
+      case IntervalType.days: { newDate =
+          DateTime(dateTime.year, dateTime.month, dateTime.day + this.intervalValue!, alertTime.hour, alertTime.minute); }
       break;
 
-      case IntervalType.weeks: { newDate = DateTime(dateTime.year, dateTime.month, dateTime.day + (this.intervalValue! * 7), 8); }
+      case IntervalType.weeks: { newDate =
+          DateTime(dateTime.year, dateTime.month, dateTime.day + (this.intervalValue! * 7), alertTime.hour, alertTime.minute); }
       break;
 
-      case IntervalType.months: { newDate = DateTime(dateTime.year, dateTime.month + this.intervalValue!, dateTime.day, 8); }
+      case IntervalType.months: { newDate =
+          DateTime(dateTime.year, dateTime.month + this.intervalValue!, dateTime.day, alertTime.hour, alertTime.minute); }
       break;
 
-      case IntervalType.years: { newDate = DateTime(dateTime.year + this.intervalValue!, dateTime.month, dateTime.day, 8); }
+      case IntervalType.years: { newDate =
+          DateTime(dateTime.year + this.intervalValue!, dateTime.month, dateTime.day, alertTime.hour, alertTime.minute); }
       break;
 
       default: { print('Interval type not valid'); }

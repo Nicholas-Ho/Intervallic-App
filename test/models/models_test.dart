@@ -84,12 +84,12 @@ void main() {
       expect(reminder.description, null);
     });
 
-    test('Test for getNewNextDate', () {
+    test('Test for getNewNextDate', () async {
       // Set up
       DateTime now = DateTime.fromMillisecondsSinceEpoch(100);
 
       // Run function
-      reminder = reminder.getNewNextDate();
+      reminder = await reminder.getNewNextDate();
 
       // Check result
       DateTime expectedDateTime = DateTime(now.year, now.month, now.day + 7, 8); // 7 days after the epoch, at 8am

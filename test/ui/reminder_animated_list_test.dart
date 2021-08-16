@@ -5,7 +5,8 @@ import 'package:mockito/mockito.dart';
 import 'package:provider/provider.dart';
 
 import 'package:intervallic_app/ui/reminder_list/reminder_list.dart';
-import 'package:intervallic_app/ui/reminder_list/tiles.dart';
+import 'package:intervallic_app/ui/reminder_list/tiles/reminder_group_tile.dart';
+import 'package:intervallic_app/ui/reminder_list/tiles/reminder_tile.dart';
 import 'package:intervallic_app/utils/domain_layer/reminder_data_state.dart';
 import 'package:intervallic_app/models/models.dart';
 

@@ -28,7 +28,7 @@ class NewReminderFormDialog extends StatelessWidget {
     );
   }
 
-  void submitButtonCallback(context, reminderNameController, reminderGroupID, intervalTextController, intervalType, descriptionController) {
+  void submitButtonCallback(context, reminderNameController, reminderGroupID, intervalTextController, intervalType, descriptionController) async {
     final reminder = Reminder(
       id: 0,
       name: reminderNameController.text,
@@ -38,7 +38,7 @@ class NewReminderFormDialog extends StatelessWidget {
       nextDate: DateTime.now(), // To calculate new nextDate from now
       description: descriptionController.text,
     );
-    Provider.of<ReminderDataState>(context, listen: false).newReminder(reminder.getNewNextDate());
+    Provider.of<ReminderDataState>(context, listen: false).newReminder(await reminder.getNewNextDate());
     ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Reminder Added!')));
 
     // Open Reminder Group (in the UI)

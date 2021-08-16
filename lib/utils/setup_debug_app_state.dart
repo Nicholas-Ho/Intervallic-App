@@ -1,11 +1,12 @@
 import 'dart:async';
 
-import 'package:intervallic_app/utils/local_notifications_service.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
 
 import 'package:intervallic_app/models/models.dart';
 import 'data_layer/db_helper.dart';
+import 'package:intervallic_app/utils/local_notifications_service.dart';
 
 // Helper function for resetting the existing database and setting up the test database
 Future<void> setupDebugDatabase() async {
@@ -61,4 +62,9 @@ Future<void> setupDebugDatabase() async {
 Future<void> clearNotifications() async {
   LocalNotificationService().init();
   await LocalNotificationService().clearAll();
+}
+
+Future<void> clearPreferences() async {
+  final prefs = await SharedPreferences.getInstance();
+  await prefs.clear();
 }

@@ -13,7 +13,7 @@ class ShimmerLoadingList extends StatelessWidget {
       children: [
         for(int i = 0; i < 5; i++)
           Padding(
-            padding: const EdgeInsets.symmetric(vertical: 3),
+            padding: const EdgeInsets.symmetric(vertical: 8),
             child: SizedBox(
               height: 60,
               child: Shimmer.fromColors(

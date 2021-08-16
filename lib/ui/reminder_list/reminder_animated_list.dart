@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 
 import 'package:provider/provider.dart';
 
-import './tiles.dart';
+import 'tiles/reminder_tile.dart';
 import 'package:intervallic_app/utils/domain_layer/reminder_data_state.dart';
 import 'package:intervallic_app/models/models.dart';
 import 'package:intervallic_app/utils/ui_layer/ui_reminder_group_manager.dart';
@@ -75,6 +75,7 @@ class _ReminderAnimatedListState extends State<ReminderAnimatedList> {
   }
 
   void _updateList() {
+    // initialReminders is the NEW, updated list (contrary to its name)
     if(widget.initialReminders!.length > _reminders.length) {
       // If Reminder is added
       int difference = widget.initialReminders!.length - _reminders.length;
@@ -104,6 +105,22 @@ class _ReminderAnimatedListState extends State<ReminderAnimatedList> {
             return Reminder(id: -1); // Placeholder null
           });
         if(difference == 0) { break; }
+      }
+    } else {
+      // If there is no change in List length, check if Reminder is updated
+      for(int i = 0; i < _reminders.length; i++) {
+        final reminder = _reminders[i];
+        final initialReminder = widget.initialReminders!.firstWhere(
+          (element) => element.id == reminder.id,
+          orElse: () {
+            print('Reminder does not exist.');
+            return Reminder(id: -1); // Placeholder null
+          });
+        if(reminder != initialReminder) {
+          // If Reminder is updated
+          _removeReminder(reminder, animate: false);
+          _addReminder(initialReminder);
+        }
       }
     }
   }
@@ -144,10 +161,14 @@ class _ReminderAnimatedListState extends State<ReminderAnimatedList> {
       index = _reminders.indexOf(reminder);
     }
 
-    listKey.currentState!.removeItem(index, (context, animation) => ScaleTransition(
-      scale: CurvedAnimation(parent: animation, curve: Curves.easeOutBack),
-      child: ReminderTile(reminder: reminder),
-    ), duration: Duration(milliseconds: removeAnimationDuration));
+    if(animate == true) {
+      listKey.currentState!.removeItem(index, (context, animation) => ScaleTransition(
+        scale: CurvedAnimation(parent: animation, curve: Curves.easeOutBack),
+        child: ReminderTile(reminder: reminder),
+      ), duration: Duration(milliseconds: removeAnimationDuration));
+    } else {
+      listKey.currentState!.removeItem(index, (context, animation) => Container());
+    }
     _reminders.remove(reminder);
   }
 
@@ -199,15 +220,15 @@ class _ReminderAnimatedListState extends State<ReminderAnimatedList> {
       child: Dismissible(
         key: UniqueKey(),
         child: ReminderTile(reminder: reminder),
-        onDismissed: (direction) {
-          final updatedReminder = reminder.getNewNextDate();
-          Provider.of<ReminderDataState>(context, listen: false).updateReminder(updatedReminder, rebuild: false);
+        onDismissed: (direction) async {
+          final updatedReminder = await reminder.getNewNextDate();
+          Provider.of<ReminderDataState>(context, listen: false).updateReminder(updatedReminder);
           // Remove and add manually
           setState(() {
             _removeReminder(reminder, index: index, animate: false);
             _addReminder(updatedReminder);
           });
-          ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Reminder Completed! Reseting date.')));
+          ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Reminder Completed! Reseting due date.')));
         },
       )
     );
@@ -219,15 +240,15 @@ class _ReminderAnimatedListState extends State<ReminderAnimatedList> {
       return Dismissible(
         key: UniqueKey(),
         child: ReminderTile(reminder: reminder),
-        onDismissed: (direction) {
-          final updatedReminder = reminder.getNewNextDate();
-          Provider.of<ReminderDataState>(context, listen: false).updateReminder(updatedReminder, rebuild: false);
+        onDismissed: (direction) async {
+          final updatedReminder = await reminder.getNewNextDate();
+          Provider.of<ReminderDataState>(context, listen: false).updateReminder(updatedReminder);
           // Remove and add manually
           setState(() {
             _removeReminder(reminder, index: index, animate: false);
             _addReminder(updatedReminder);
           });
-          ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Reminder Completed! Reseting date.')));
+          ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Reminder Completed! Reseting due date.')));
         },
       );
     }

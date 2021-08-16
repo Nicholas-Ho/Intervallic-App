@@ -92,7 +92,7 @@ class CreateNewNavigationDialog extends StatelessWidget {
                   return button(false);
                 }
               } else {
-                return button(true);
+                return button(false);
               }
             }
           );

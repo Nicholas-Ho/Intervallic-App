@@ -144,7 +144,7 @@ class UpdateReminderDialog extends StatelessWidget {
               primary: Color(0xff99FF99),
               onPrimary: Colors.black,
             ),
-            onPressed: () {
+            onPressed: () async {
               Navigator.pop(context);
               final updatedReminder = Reminder(
                 id: id,
@@ -155,7 +155,7 @@ class UpdateReminderDialog extends StatelessWidget {
                 nextDate: DateTime.now(), // Recalculate nextDate from now
                 description: description,
               );
-              Provider.of<ReminderDataState>(context, listen: false).updateReminder(updatedReminder.getNewNextDate());
+              Provider.of<ReminderDataState>(context, listen: false).updateReminder(await updatedReminder.getNewNextDate());
               ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Reminder Updated! Due date changed.')));
             },
           )
@@ -172,7 +172,7 @@ class UpdateReminderDialog extends StatelessWidget {
               primary: Color(0xffec1c24),
               onPrimary: Colors.white,
             ),
-            onPressed: () {
+            onPressed: () async {
               Navigator.pop(context);
               final updatedReminder = Reminder(
                 id: id,
@@ -183,7 +183,7 @@ class UpdateReminderDialog extends StatelessWidget {
                 nextDate: nextDate, // If not, keep the original nextDate
                 description: description,
               );
-              Provider.of<ReminderDataState>(context, listen: false).updateReminder(updatedReminder.getNewNextDate());
+              Provider.of<ReminderDataState>(context, listen: false).updateReminder(await updatedReminder.getNewNextDate());
               ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Reminder Updated! Due date not changed.')));
             },
           )

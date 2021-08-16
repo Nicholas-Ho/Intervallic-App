@@ -131,7 +131,7 @@ class ReminderDataState extends ChangeNotifier {
   }
 
   // Updating an existing Reminder
-  updateReminder(Reminder updatedReminder, {bool rebuild = true}) async {
+  updateReminder(Reminder updatedReminder) async {
     try {
       final data = await reminderData;
       final reminderGroup = data.keys.firstWhere((group) => group.id == updatedReminder.reminderGroupID);
@@ -146,7 +146,7 @@ class ReminderDataState extends ChangeNotifier {
         // Update database
         dataLayer.updateEntryToDB('reminders', updatedReminder.toMap());
 
-        if(rebuild) { notifyListeners(); }
+        notifyListeners();
       } else {
         // Taking into account if a Reminder's Reminder Group was changed.
         bool isFound = false;
@@ -161,7 +161,7 @@ class ReminderDataState extends ChangeNotifier {
                 // Update database
                 dataLayer.updateEntryToDB('reminders', updatedReminder.toMap());
 
-                if(rebuild) { notifyListeners(); }
+                notifyListeners();
               }
               
               isFound = true;
@@ -257,6 +257,7 @@ class ReminderDataState extends ChangeNotifier {
   }
 
   // Allow manual initialising of Local Notification Manager (for testing purposes ONLY)
+  @visibleForTesting
   Future<void> setLocalNotificationManager(LocalNotificationManager manager) async {
     _localNotificationManager = manager;
     _localNotificationManager!.init(await reminderData);
