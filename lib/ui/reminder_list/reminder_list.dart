@@ -6,7 +6,6 @@ import 'tiles/reminder_group_tile.dart';
 import 'reminder_animated_list.dart';
 import 'package:intervallic_app/utils/domain_layer/reminder_data_state.dart';
 import 'package:intervallic_app/models/models.dart';
-import 'placeholders/shimmer_loading_list.dart';
 import 'placeholders/empty_reminder_list_placeholder.dart';
 import 'package:intervallic_app/utils/ui_layer/ui_reminder_group_manager.dart';
 import 'package:intervallic_app/utils/domain_layer/reminder_list_order_manager.dart';
@@ -18,37 +17,39 @@ class ReminderList extends StatelessWidget {
   @override
   Widget build(context) {
     return Consumer2<ReminderDataState, ReminderListOrderManager>( // Consumer for Reminder Data
-        builder: (context, reminderDataState, reminderListOrderManager, child) {
-          return FutureBuilder(
-              // Future Builder for queried Reminder Data and UI Group List Order
-              future: Future.wait([
-                reminderDataState.reminderData,
-                reminderListOrderManager.getUIGroupListOrder()
-              ]),
-              builder: (context, AsyncSnapshot<List<dynamic>> snapshot) {
-                // snapshot.data[0] is reminderData
-                // snapshot.data[1] is the UI Group List Order
-                // Both Futures will be completed together. When one is finished, it will wait for the other.
+      builder: (context, reminderDataState, reminderListOrderManager, child) {
+        return FutureBuilder(
+          // Future Builder for queried Reminder Data and UI Group List Order
+          future: Future.wait([
+            reminderDataState.reminderData,
+            reminderListOrderManager.getUIGroupListOrder()
+          ]),
+          builder: (context, AsyncSnapshot<List<dynamic>> snapshot) {
+            // snapshot.data[0] is reminderData
+            // snapshot.data[1] is the UI Group List Order
+            // Both Futures will be completed together. When one is finished, it will wait for the other.
 
-                if (snapshot.hasData) {
-                  // If snapshot.hasData returns true, reminderData (and the UI List Order) has been fetched
-                  if (snapshot.data![0].isNotEmpty) {
-                    // If reminderData is not empty, display the list
-                    return ListView(
-                      physics: BouncingScrollPhysics(),
-                      children: generateContainers(snapshot.data![0], snapshot.data![1]),
-                      padding: const EdgeInsets.all(10),
-                    );
-                  } else {
-                    // If reminderData is empty, display the empty list placeholder
-                    return EmptyReminderListPlaceholder();
-                  }
-                } else {
-                  // If snapshot.hasData returns false, reminderData has not been fetched
-                  return LoadingReminderListPlaceholder();
-                }
-              });
-    });
+            if (snapshot.hasData) {
+              // If snapshot.hasData returns true, reminderData (and the UI List Order) has been fetched
+              if (snapshot.data![0].isNotEmpty) {
+                // If reminderData is not empty, display the list
+                return ListView(
+                  physics: BouncingScrollPhysics(),
+                  children: generateContainers(snapshot.data![0], snapshot.data![1]),
+                  padding: const EdgeInsets.all(10),
+                );
+              } else {
+                // If reminderData is empty, display the empty list placeholder
+                return EmptyReminderListPlaceholder();
+              }
+            } else {
+              // If snapshot.hasData returns false, reminderData has not been fetched
+              return LoadingReminderListPlaceholder();
+            }
+          }
+        );
+      }
+    );
   }
 
   // Generates List of Reminder Group containers (for each Reminder Group)
