@@ -8,13 +8,13 @@ class ReorderPage extends StatelessWidget {
     final Color backgroundColour = Colors.grey;
 
     return Scaffold(
-      key: UniqueKey(),
       backgroundColor: backgroundColour,
       appBar: AppBar(
         backgroundColor: backgroundColour,
         elevation: 0,
         centerTitle: true,
         title: Text("Intervallic", style: TextStyle(fontSize: 30, fontWeight: FontWeight.w700, color: Colors.white)),
+        leading: CancelReorderButton(),
         actions: [EndReorderButton()],
       ),
       body: ReminderListReorderable(), // Wrapped to switch between the Reminder List and Reorderable List

@@ -40,14 +40,7 @@ class _ReminderListReorderableState extends State<ReminderListReorderable> {
     reminderGroupList!.addAll(data);
 
     // Update Reminder List loading placeholder
-    LoadingReminderListPlaceholderState.state.updatePlaceholder(ListView(
-      physics: BouncingScrollPhysics(),
-      children: [
-        for(int i = 0; i < reminderGroupList!.length; i++)
-          buildTile(context, i)
-      ],
-      padding: const EdgeInsets.all(10),
-    ));
+    LoadingReminderListPlaceholderState.state.updatePlaceholder(reminderGroupList!);
   }
 
   Widget buildTile(context, index) {
@@ -99,14 +92,7 @@ class _ReminderListReorderableState extends State<ReminderListReorderable> {
     Provider.of<ReminderListOrderManager>(context, listen: false).updateUIGroupListOrder(newListOrder);
     
     // Update Reminder List loading placeholder
-    LoadingReminderListPlaceholderState.state.updatePlaceholder(ListView(
-      physics: BouncingScrollPhysics(),
-      children: [
-        for(int i = 0; i < reminderGroupList!.length; i++)
-          buildTile(context, i)
-      ],
-      padding: const EdgeInsets.all(10),
-    ));
+    LoadingReminderListPlaceholderState.state.updatePlaceholder(reminderGroupList!);
   }
 
   @override
@@ -202,6 +188,23 @@ class EndReorderButton extends StatelessWidget {
       color: Color(0xff99FF99),
       onPressed: () {
         Provider.of<ReminderListOrderManager>(context, listen: false).endReorder();
+        NavigationManager().changePage(AppPage.intervallicPage);
+      },
+    );
+  }
+}
+
+// Appbar button to end reordering (renders in ReorderPage)
+class CancelReorderButton extends StatelessWidget {
+  const CancelReorderButton({ Key? key }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return IconButton(
+      icon: Icon(Icons.close),
+      color: Color(0xffec1c24),
+      onPressed: () {
+        Provider.of<ReminderListOrderManager>(context, listen: false).cancelReorder();
         NavigationManager().changePage(AppPage.intervallicPage);
       },
     );

@@ -81,16 +81,15 @@ class ReminderList extends StatelessWidget {
           reminderGroup: entry.key,
           reminders: entry.value,
         ));
+        doneList.add(entry.key);
         return ReminderGroup(id: -1);
       });
     }
 
-    // Update the LoadingReorderablePlaceholder state
-    LoadingReorderablePlaceholderState.state.updatePlaceholder(ListView(
-      physics: BouncingScrollPhysics(),
-      children: containerList,
-      padding: const EdgeInsets.all(10),
-    ));
+    // Update the LoadingReorderablePlaceholder and LoadingReminderListPlaceholder states
+    // LoadingReminderListPlaceholder is for navigation loading
+    LoadingReorderablePlaceholderState.state.updatePlaceholder(doneList);
+    LoadingReminderListPlaceholderState.state.updatePlaceholder(doneList);
 
     return containerList;
   }

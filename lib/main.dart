@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 import 'package:provider/provider.dart';
 
-import 'theme.dart';
+import 'themes.dart';
 import 'utils/domain_layer/reminder_data_state.dart';
 import 'utils/ui_layer/ui_reminder_group_manager.dart';
 import 'utils/domain_layer/reminder_list_order_manager.dart';
@@ -43,8 +43,13 @@ class IntervallicApp extends StatelessWidget {
       theme: intervallicTheme,
       home: Consumer<NavigationManager>(
         builder: (context, manager, _) {
+          final List<Widget> stack = manager.pageStack;
+          
           return Navigator(
-            pages: [MaterialPage(child: manager.currentPage)],
+            pages: [
+              for(int i = 0; i < stack.length; i++)
+                MaterialPage(child: stack[i])
+            ],
             onPopPage: (route, result) {
               return route.didPop(result);
             },

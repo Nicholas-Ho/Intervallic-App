@@ -2,9 +2,10 @@ import 'package:flutter/material.dart';
 
 import '../pages/intervallic_page.dart';
 import '../pages/reorder_page.dart';
+import '../pages/settings_page.dart';
 
 enum AppPage { // Enumerator for navigation pages
-  intervallicPage, reorderPage
+  intervallicPage, reorderPage, settingsPage
 }
 
 class NavigationManager extends ChangeNotifier {
@@ -19,19 +20,29 @@ class NavigationManager extends ChangeNotifier {
   final Map<AppPage, Widget> pageDict = {
     AppPage.intervallicPage: IntervallicPage(),
     AppPage.reorderPage: ReorderPage(),
+    AppPage.settingsPage: SettingsPage(),
   };
 
   // Defaults to Intervallic Page
-  AppPage _currentPageTag = AppPage.intervallicPage;
+  List<AppPage> _pageStackTags = [AppPage.intervallicPage];
 
-  Widget get currentPage {
-    return pageDict[_currentPageTag]!;
+  List<Widget> get pageStack {
+    return [
+      for(int i = 0; i < _pageStackTags.length; i++)
+        pageDict[_pageStackTags[i]]!
+    ];
   }
 
-  void changePage(AppPage newPage) {
-    if(_currentPageTag != newPage) {
-      _currentPageTag = newPage;
+  // Provide the BuildContext if navigating via the Navigation Drawer.
+  // BuildContext not required for ReorderPage (since it should feel in-place)
+  void changePage(AppPage newPage, {BuildContext? drawerContext}) {
+    if(_pageStackTags[0] != newPage) {
+      if(drawerContext != null) {
+        Navigator.of(drawerContext).pop();
+      }
+      _pageStackTags = [newPage];
     }
+
     notifyListeners();
   }
 }

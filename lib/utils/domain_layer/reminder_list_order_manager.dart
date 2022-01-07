@@ -4,29 +4,22 @@ import '../data_layer/settings_manager.dart';
 
 class ReminderListOrderManager extends ChangeNotifier {
   final Settings settings = SettingsManager().settings;
-  bool _isReordering = false;
 
   List<int>? _cachedOrder; // Storing list order to update
 
-  bool get isReordering {
-    return _isReordering;
-  }
-
   void beginReorder() {
-    _isReordering = true;
     _cachedOrder = null;
-    notifyListeners();
   }
 
   void endReorder() async {
-    _isReordering = false;
-
     // Only push if changes were made
     if(_cachedOrder != null) {
       settings.setUIGroupListOrder(_cachedOrder!);
     }
+  }
 
-    notifyListeners();
+  void cancelReorder() async {
+    _cachedOrder = null;
   }
 
   // Updates the cached list order. Does NOT update shared preferences (only updated on endReorder)

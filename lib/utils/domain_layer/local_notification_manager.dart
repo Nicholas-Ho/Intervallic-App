@@ -4,20 +4,21 @@ import 'package:intervallic_app/models/models.dart';
 import 'package:intervallic_app/utils/local_notifications_service.dart';
 
 // Local Notification logic manager.
-// The app will remind the user for a week for each notification (1 notification per day for 7 days).
+// The app will remind the user for a few days for each notification (1 notification per day for a few days).
+// The number of days to remind the user can also be set to 1.
 // The app will cap at 64 notifications (in line with iOS' maximum of 64 local notifications).
 // If the user doesn't open the app after 63 notifications, the last notification will say "These reminders don't seem to be working".
 // When the app opens, the notifications will be recalculated.
 
-// Because each Reminder will need 7 notifications, the notification IDs will be calculated as follows:
+// Because each Reminder will need a few notifications, the notification IDs will be calculated as follows:
 // (reminder.id * 10) + day
-// eg. For the Reminder with ID: 3
+// eg. For the Reminder with ID: 3, with the number of days to remind set to 7 days (a week)
 // Notification IDs: 31, 32, 33, 34, 35, 36, 37 (for the 7 days - essentially ID: "3, day 7")
 // For Daily Notifications, the Notification ID will simply be (reminder.id * 10)
 // eg. For the Reminder with ID: 5, Notification ID: 50
 
 class LocalNotificationManager {
-  static const int daysToRemind = 7; // How many days to remind the user after a Reminder is overdue
+  static const int daysToRemind = 1; // How many days to remind the user after a Reminder is overdue
   static const int maxNotifications = 64; // Maximum number of Notifications (iOS imposed)
 
   LocalNotificationService localNotificationService = LocalNotificationService();
