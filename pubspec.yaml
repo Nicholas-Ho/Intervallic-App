@@ -12,7 +12,7 @@ dependencies:
   flutter:
     sdk: flutter
   cupertino_icons: ^1.0.3
-  shared_preferences: ^2.0.6
+  shared_preferences: ^2.0.11
   shimmer: ^2.0.0
   sqflite: ^2.0.0+3
   path: ^1.8.0

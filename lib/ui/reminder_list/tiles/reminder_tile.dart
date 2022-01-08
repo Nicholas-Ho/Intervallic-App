@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 import 'package:intervallic_app/models/models.dart';
+import 'package:intervallic_app/themes.dart';
 import 'package:intervallic_app/ui/dialogs/reminder_dialogs/reminder_details_dialog.dart';
 // Tile for Reminder
 class ReminderTile extends StatelessWidget {
@@ -25,7 +27,7 @@ class ReminderTile extends StatelessWidget {
             );
           },
           child: Card(
-            color: getColour(),
+            color: getColour(context),
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(10.0),
             ),
@@ -33,7 +35,7 @@ class ReminderTile extends StatelessWidget {
               padding: const EdgeInsets.all(10),
               child: Align(
                 alignment: Alignment.centerLeft,
-                child: Text(reminder!.name!, style: TextStyle(fontSize: 20, color: getSecondaryColour())),
+                child: Text(reminder!.name!, style: TextStyle(fontSize: 20, color: getSecondaryColour(context))),
               ),
             ),
           ),
@@ -42,19 +44,19 @@ class ReminderTile extends StatelessWidget {
     );
   }
 
-  Color getColour() {
+  Color getColour(context) {
     if(reminder!.isOverdue) {
-      return Color(0xffec1c24);
+      return Provider.of<ThemeManager>(context, listen: false).appTheme.overduePrimaryColour!;
     } else {
-      return Color(0xff99FF99);
+      return Provider.of<ThemeManager>(context, listen: false).appTheme.duePrimaryColour!;
     }
   }
 
-  Color getSecondaryColour() {
-    if(getColour() == Color(0xffec1c24)) {
-      return Colors.white;
+  Color getSecondaryColour(context) {
+    if(reminder!.isOverdue) {
+      return Provider.of<ThemeManager>(context, listen: false).appTheme.overdueSecondaryColour!;
     } else {
-      return Colors.black;
+      return Provider.of<ThemeManager>(context, listen: false).appTheme.dueSecondaryColour!;
     }
   }
 }

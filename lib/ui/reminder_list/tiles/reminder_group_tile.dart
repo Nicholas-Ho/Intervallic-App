@@ -40,7 +40,7 @@ class ReminderGroupTile extends StatelessWidget {
             );
           },
           child: Card(
-            color: Colors.white,
+            color: Theme.of(context).accentColor,
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(10.0),
             ),

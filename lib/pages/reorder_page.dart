@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
+import '../themes.dart';
 import '../ui/reminder_list/reminder_list_reorderable.dart';
 
 class ReorderPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    final Color backgroundColour = Colors.grey;
+    final Color backgroundColour = Provider.of<ThemeManager>(context, listen: false).appTheme.reorderBackgroundColour!;
 
     return Scaffold(
       backgroundColor: backgroundColour,
