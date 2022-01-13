@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 import 'package:provider/provider.dart';
 
-import 'themes.dart';
+import 'utils/domain_layer/theme_manager.dart';
 import 'utils/domain_layer/reminder_data_state.dart';
 import 'utils/ui_layer/ui_reminder_group_manager.dart';
 import 'utils/domain_layer/reminder_list_order_manager.dart';

@@ -52,7 +52,7 @@ class _ReminderListReorderableState extends State<ReminderListReorderable> {
         child: SizedBox(
           height: 60,
           child: Card(
-            color: Theme.of(context).accentColor,
+            color: Theme.of(context).colorScheme.secondary,
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(10.0),
             ),

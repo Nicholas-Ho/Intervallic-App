@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-import 'package:intervallic_app/themes.dart';
+import 'package:intervallic_app/utils/domain_layer/theme_manager.dart';
 import 'package:intervallic_app/utils/navigation_manager.dart';
 
 class NavigationDrawer extends StatelessWidget {

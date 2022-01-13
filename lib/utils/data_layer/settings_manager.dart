@@ -16,7 +16,7 @@ class SettingsManager {
 
 // Settings object
 // 1. Alert Time - Determines the time when notifications will fire. Defaults to 8am.
-// 2. Reminder Group List Order - Determines the UI order of the Reminder Group List.
+// 2. Reminder Group List Order - Determines the UI order of the Reminder Group List. (NOT set in Settings!)
 // 3. App Theme - Determines the colour scheme of the app.
 class Settings {
   SharedPreferences? _prefs;
@@ -37,7 +37,7 @@ class Settings {
     }
 
     final prefs = _prefs ?? await SharedPreferences.getInstance();
-    final alertTimeString = prefs.getString(_alertTimeKey) ?? null;
+    final alertTimeString = prefs.getString(_alertTimeKey);
 
     if(alertTimeString != null) {
       final splitTimeString = alertTimeString.split(":"); // "8:00"
@@ -66,7 +66,7 @@ class Settings {
     }
 
     final prefs = _prefs ?? await SharedPreferences.getInstance();
-    final orderStringList = prefs.getStringList(_uiGroupListOrderKey) ?? null;
+    final orderStringList = prefs.getStringList(_uiGroupListOrderKey);
 
     if(orderStringList != null) {
       _uiGroupListOrder = orderStringList.map((element) => int.parse(element)).toList();

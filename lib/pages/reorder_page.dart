@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-import '../themes.dart';
+import '../utils/domain_layer/theme_manager.dart';
 import '../ui/reminder_list/reminder_list_reorderable.dart';
 
 class ReorderPage extends StatelessWidget {

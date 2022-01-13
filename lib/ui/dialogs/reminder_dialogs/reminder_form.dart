@@ -1,4 +1,3 @@
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 import 'package:provider/provider.dart';
@@ -144,12 +143,11 @@ class _ReminderFormState extends State<ReminderForm> {
                   icon: const Icon(Icons.arrow_downward,),
                     iconSize: 24,
                     elevation: 16,
-                    style: TextStyle(color: Theme.of(context).buttonColor),
                   items: snapshot.data!.keys.map<DropdownMenuItem<int>>((ReminderGroup? group) {
                     return DropdownMenuItem(
                       key: Key(group!.name!), // For testing
                       value: group.id,
-                      child: Text(group.name!, style: TextStyle(color: Colors.black),)
+                      child: Text(group.name!)
                     );
                   }).toList(),
                   onChanged: (dynamic value) {
@@ -214,12 +212,11 @@ class _ReminderFormState extends State<ReminderForm> {
               icon: const Icon(Icons.arrow_downward),
                 iconSize: 24,
                 elevation: 16,
-                style: TextStyle(color: Theme.of(context).buttonColor),
               items: _intervalDropdownList.map<DropdownMenuItem<IntervalType>>((element) {
                 return DropdownMenuItem(
                   key: Key(element.capitalizedSimpleString()), // For testing
                   value: element,
-                  child: Text(element.capitalizedSimpleString(), style: TextStyle(color: Colors.black),)
+                  child: Text(element.capitalizedSimpleString())
                 );
               }).toList(),
               onChanged: (dynamic value) {

@@ -1,25 +1,6 @@
 import 'package:flutter/material.dart';
 // import 'package:google_fonts/google_fonts.dart';
 
-import 'utils/data_layer/settings_manager.dart';
-
-class ThemeManager extends ChangeNotifier {
-  AppTheme? _appTheme;
-
-  ThemeManager(String? themeKey){
-    final theme = themeKey;
-    _appTheme = themeDict[theme];
-  }
-
-  AppTheme get appTheme => _appTheme!;
-
-  void setTheme(String themeKey) {
-    _appTheme = themeDict[themeKey];
-    notifyListeners();
-    SettingsManager().settings.setAppTheme(themeKey);
-  }
-}
-
 class AppTheme {
   final ThemeData? themeData;
 
@@ -58,7 +39,7 @@ final themeDict = {
               primaryColorLight: Color(0xff66e2ff),
               primaryColorDark: Color(0xff0081bd),
 
-              accentColor: Color(0xffffffff), // 0xff304ffe, 0xffff4081
+              colorScheme: ThemeData().colorScheme.copyWith(brightness: Brightness.light, secondary: Color(0xffffffff)), // 0xff304ffe, 0xffff4081
 
               fontFamily: 'VAGRounded',
             ),
@@ -81,7 +62,7 @@ final themeDict = {
               primaryColorLight: Color(0xff66e2ff),
               primaryColorDark: Color(0xff0081bd),
 
-              accentColor: Color(0xff002171),
+              colorScheme: ThemeData().colorScheme.copyWith(brightness: Brightness.dark, secondary: Color(0xff002171)),
 
               fontFamily: 'VAGRounded',
             ),

@@ -23,7 +23,7 @@ class IntervallicPage extends StatelessWidget {
       ),
       body: ReminderList(),
       floatingActionButton: FloatingActionButton(
-        backgroundColor: Theme.of(context).accentColor,
+        backgroundColor: Theme.of(context).colorScheme.secondary,
         foregroundColor: Theme.of(context).primaryColor,
         child: Icon(Icons.add),
         onPressed: () {
